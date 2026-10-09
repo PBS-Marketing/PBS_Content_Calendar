@@ -1,6 +1,6 @@
 {
  "version": 2,
- "savedAt": "2026-10-09T21:58:00.000Z",
+ "savedAt": "2026-10-09T22:25:00.000Z",
  "title": "LinkedIn Content Calendar",
  "lists": {
   "channels": [
@@ -277,6 +277,35 @@
    }
   },
   {
+   "id": "prebrand2",
+   "date": "2026-10-27",
+   "time": "11:00",
+   "channel": "Brand Services",
+   "campaign": "Global ReBrands",
+   "pillar": "gtm",
+   "format": "Carousel",
+   "objective": "Lead generation",
+   "audience": "All Followers",
+   "title": "Rebrand killer 2 of 5: The Audit Trap",
+   "copy": "",
+   "link": "",
+   "asset": "",
+   "owner": "John C",
+   "approver": "Simon",
+   "status": "In Draft",
+   "impressions": null,
+   "engagements": null,
+   "engagementRate": null,
+   "clicks": null,
+   "followers": null,
+   "assetFile": {
+    "name": "PBS_Post2_Audit_Trap_Carousel.pdf",
+    "type": "application/pdf",
+    "size": 121458,
+    "src": "assets/PBS_Post2_Audit_Trap_Carousel.pdf"
+   }
+  },
+  {
    "id": "p10qq3",
    "date": "2026-10-29",
    "time": "11:00",
@@ -335,6 +364,35 @@
    }
   },
   {
+   "id": "prebrand3",
+   "date": "2026-11-10",
+   "time": "11:00",
+   "channel": "Brand Services",
+   "campaign": "Global ReBrands",
+   "pillar": "gtm",
+   "format": "Carousel",
+   "objective": "Lead generation",
+   "audience": "All Followers",
+   "title": "Rebrand killer 3 of 5: The Making Good Trap",
+   "copy": "",
+   "link": "",
+   "asset": "",
+   "owner": "John C",
+   "approver": "Simon",
+   "status": "In Draft",
+   "impressions": null,
+   "engagements": null,
+   "engagementRate": null,
+   "clicks": null,
+   "followers": null,
+   "assetFile": {
+    "name": "PBS_Post3_Making_Good_Trap_Carousel.pdf",
+    "type": "application/pdf",
+    "size": 121326,
+    "src": "assets/PBS_Post3_Making_Good_Trap_Carousel.pdf"
+   }
+  },
+  {
    "id": "p10qq5",
    "date": "2026-11-12",
    "time": "11:00",
@@ -361,6 +419,93 @@
     "type": "application/pdf",
     "size": 165598,
     "src": "assets/PBS_10Q_Q5_LinkedIn_carousel.pdf"
+   }
+  },
+  {
+   "id": "prebrand4",
+   "date": "2026-11-24",
+   "time": "11:00",
+   "channel": "Brand Services",
+   "campaign": "Global ReBrands",
+   "pillar": "gtm",
+   "format": "Carousel",
+   "objective": "Lead generation",
+   "audience": "All Followers",
+   "title": "Rebrand killer 4 of 5: The Local Nuance Trap",
+   "copy": "",
+   "link": "",
+   "asset": "",
+   "owner": "John C",
+   "approver": "Simon",
+   "status": "In Draft",
+   "impressions": null,
+   "engagements": null,
+   "engagementRate": null,
+   "clicks": null,
+   "followers": null,
+   "assetFile": {
+    "name": "PBS_Post4_Local_Nuance_Trap_Carousel.pdf",
+    "type": "application/pdf",
+    "size": 122161,
+    "src": "assets/PBS_Post4_Local_Nuance_Trap_Carousel.pdf"
+   }
+  },
+  {
+   "id": "prebrand5",
+   "date": "2026-12-08",
+   "time": "11:00",
+   "channel": "Brand Services",
+   "campaign": "Global ReBrands",
+   "pillar": "gtm",
+   "format": "Carousel",
+   "objective": "Lead generation",
+   "audience": "All Followers",
+   "title": "Rebrand killer 5 of 5: The Incomplete Toolkit Trap",
+   "copy": "",
+   "link": "",
+   "asset": "",
+   "owner": "John C",
+   "approver": "Simon",
+   "status": "In Draft",
+   "impressions": null,
+   "engagements": null,
+   "engagementRate": null,
+   "clicks": null,
+   "followers": null,
+   "assetFile": {
+    "name": "PBS_Post5_Incomplete_Toolkit_Trap_Carousel.pdf",
+    "type": "application/pdf",
+    "size": 121631,
+    "src": "assets/PBS_Post5_Incomplete_Toolkit_Trap_Carousel.pdf"
+   }
+  },
+  {
+   "id": "prebrand6",
+   "date": "2026-12-22",
+   "time": "11:00",
+   "channel": "Brand Services",
+   "campaign": "Global ReBrands",
+   "pillar": "gtm",
+   "format": "Carousel",
+   "objective": "Lead generation",
+   "audience": "All Followers",
+   "title": "Proof point: Accelleron, 120 sites, 87 countries, one partner",
+   "copy": "",
+   "link": "",
+   "asset": "",
+   "owner": "John C",
+   "approver": "Simon",
+   "status": "In Draft",
+   "impressions": null,
+   "engagements": null,
+   "engagementRate": null,
+   "clicks": null,
+   "followers": null,
+   "assetFile": {
+    "name": "PBS_Post6_Accelleron_Carousel.pdf",
+    "type": "application/pdf",
+    "size": 124360,
+    "src": "assets/PBS_Post6_Accelleron_Carousel.pdf"
    }
   }
  ]
