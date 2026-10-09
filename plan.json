@@ -1,6 +1,6 @@
 {
  "version": 2,
- "savedAt": "2026-10-09T20:55:00.000Z",
+ "savedAt": "2026-10-09T21:08:00.000Z",
  "title": "LinkedIn Content Calendar",
  "lists": {
   "channels": [
@@ -122,20 +122,12 @@
   ],
   "governance": [
    {
-    "area": null,
-    "details": "Corporate"
+    "area": "Content Owners",
+    "details": "Jodie Forde, John Cornfield"
    },
    {
-    "area": null,
-    "details": "Clients"
-   },
-   {
-    "area": null,
-    "details": "Talent"
-   },
-   {
-    "area": null,
-    "details": "France & Romania"
+    "area": "Content Sponsors",
+    "details": "Marianne Descamps, Simon Rozee"
    }
   ]
  },
