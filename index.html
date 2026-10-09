@@ -251,6 +251,13 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
 .ov table{width:100%;border-collapse:collapse;font-size:12px}
 .ov td,.ov th{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
 .ov th{font-size:11px;color:var(--muted)}
+.pv-scrim{position:fixed;inset:0;background:rgba(5,20,43,.55);z-index:50}
+.pv-wrap{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100% - 24px));max-height:calc(100% - 24px);display:flex;flex-direction:column;background:var(--bg);border-radius:12px;box-shadow:var(--shadow);z-index:51;overflow:hidden}
+.pv-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--surface);font-weight:600;color:var(--fg)}
+.pv-bar span{flex:1;min-width:0}
+.pv-bar .x{border:0;background:transparent;font-size:22px;color:var(--muted);line-height:1;padding:2px 8px;border-radius:6px}
+.pv-body{overflow:auto;padding:16px}
+.pv-foot{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line);background:var(--surface)}
 .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:9px 14px;border-radius:999px;font-weight:600;font-size:12px;z-index:60;box-shadow:var(--shadow);max-width:90vw}
 @media (max-width:720px){
   .top .logo{height:32px}
@@ -707,7 +714,11 @@ async function exportXlsx(){
   await saveFile('LinkedIn content calendar '+stamp()+'.xlsx', new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
 }
 function mixHex(hex, withHex, amt){ const h=hex.replace('#',''), w=withHex.replace('#',''); const c=i=>parseInt(h.slice(i,i+2),16), d=i=>parseInt(w.slice(i,i+2),16); const m=i=>Math.round(d(i)+(c(i)-d(i))*amt).toString(16).padStart(2,'0'); return (m(0)+m(2)+m(4)).toUpperCase(); }
-async function exportPptx(){
+// Small in-page chooser: which month goes in the deck.
+function chooseMonth(){ return new Promise(resolve=>{ let host=$('#chooserHost'); if(!host){ host=document.createElement('div'); host.id='chooserHost'; document.body.appendChild(host); } const t=today(); const cur=new Date(t.getFullYear(),t.getMonth(),1), nxt=addMonths(cur,1); const lab=d=>MONTHS_LONG[d.getMonth()]+' '+d.getFullYear(); const count=d=>plan.items.filter(it=>{ const x=pd(it.date); return x && x>=d && x<addMonths(d,1); }).length;
+  host.innerHTML='<div class="pv-scrim" id="cmScrim"></div><div class="pv-wrap" role="dialog" aria-modal="true" aria-labelledby="cmTitle" style="width:min(420px,calc(100% - 24px))"><div class="pv-bar"><span id="cmTitle">Export PowerPoint deck</span><button type="button" class="x" id="cmClose" aria-label="Close">×</button></div><div class="pv-body" style="background:var(--bg)"><p class="hint" style="margin:0 0 10px">The deck has the month page, then one slide per week with the post previews. Which month?</p><div style="display:flex;flex-direction:column;gap:8px"><button type="button" class="btn" data-m="0" style="justify-content:space-between"><span>'+lab(cur)+' (this month)</span><span class="hint">'+count(cur)+' post'+(count(cur)===1?'':'s')+'</span></button><button type="button" class="btn" data-m="1" style="justify-content:space-between"><span>'+lab(nxt)+' (next month)</span><span class="hint">'+count(nxt)+' post'+(count(nxt)===1?'':'s')+'</span></button></div></div><div class="pv-foot"><div class="spacer"></div><button type="button" class="btn" id="cmCancel">Cancel</button></div></div>';
+  const done=v=>{ host.innerHTML=''; resolve(v); }; $('#cmScrim').onclick=()=>done(null); $('#cmClose').onclick=()=>done(null); $('#cmCancel').onclick=()=>done(null); host.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>done(Number(b.dataset.m)===0?cur:nxt)); }); }
+async function exportPptx(monthStart){
   const P=await ensureLib('PptxGenJS','https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js'); if(!P){ toast('PowerPoint library did not load'); return; }
   const pptx=new P(); pptx.layout='LAYOUT_WIDE'; pptx.title=plan.title||'LinkedIn Content Calendar'; pptx.company='Paragon Brand Services';
   const W=13.333, M=0.4, FONT='Montserrat'; const items=plan.items.filter(matchesFilters); const tToday=today(); const weekly=false;
@@ -717,7 +728,7 @@ async function exportPptx(){
     if(withKey) s.addText(leg,{x:M,y:7.12,w:W-2*M,h:0.25,fontFace:FONT,fontSize:7.5,align:'left',margin:0});
     else { const st=[{text:'Status  ',options:{bold:true,color:'132662'}}]; plan.lists.statuses.forEach(x=>{ st.push({text:'● ',options:{color:statusColor(x).replace('#','')}}); st.push({text:x+'  ',options:{color:'56618A'}}); }); s.addText(st,{x:M,y:7.12,w:W-2*M,h:0.25,fontFace:FONT,fontSize:7.5,align:'left',margin:0}); } };
   { // month pages, laid out like the Calendar view, whichever view is open
-    let {s:rs,e:re}=rangeDates(); if(view.mode==='weekly'){ const last=addDays(re,-1); rs=new Date(rs.getFullYear(),rs.getMonth(),1); re=addMonths(new Date(last.getFullYear(),last.getMonth(),1),1); }
+    const rs=monthStart||new Date(tToday.getFullYear(),tToday.getMonth(),1), re=addMonths(rs,1);
     const monthItems=items.filter(it=>{ const d=pd(it.date); return d && d>=rs && d<re; }); const rowsAllM=plan.pillars.map(p=>({p, items:monthItems.filter(i=>i.pillar===p.id)})); rowsAll.length=0; rowsAllM.forEach(r=>rowsAll.push(r));
     for(let m=new Date(rs); m<re; m=addMonths(m,1)){ const s=pptx.addSlide(); s.background={color:'FFFFFF'}; addHeader(s, MONTHS_LONG[m.getMonth()]+' '+m.getFullYear(), true);
       const first=m,last=addMonths(m,1); const weeks=[]; for(let d=mondayOnOrBefore(first); d<last; d=addDays(d,7)) weeks.push(d);
@@ -756,22 +767,28 @@ async function exportPptx(){
       if(!weekly && tToday>=rs&&tToday<re){ const nx=gx+daysBetween(rs,tToday)*pxd; s.addShape(pptx.ShapeType.line,{x:nx,y,w:0,h:rh,line:{color:'132662',width:1,dashType:'dash'}}); }
       y+=rh; });
   });
-  // Next five posts, as LinkedIn-style preview cards left to right, full copy shown.
-  const upcoming=plan.items.filter(it=>{ const d=pd(it.date); return d && d>=tToday; }).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||'')).slice(0,5);
-  if(upcoming.length){
-    const h2c=await ensureLib('html2canvas','https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js') || await ensureLib('html2canvas','https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js');
-    const s=pptx.addSlide(); s.background={color:'FFFFFF'};
-    addHeader(s, 'Next '+upcoming.length+' post'+(upcoming.length>1?'s':'')+' from '+fmtDay(iso(tToday)), false);
-    const gap=0.18, n=5, colW=(W-2*M-gap*(n-1))/n, top=1.55, maxH=7.5-top-0.45;
-    for(let i=0;i<upcoming.length;i++){ const it=upcoming[i]; const x=M+i*(colW+gap); const p=pillarOf(it.pillar)||UNASSIGNED;
-      s.addText([{text:'● ',options:{color:p.color.replace('#','')}},{text:p.name+'  ',options:{bold:true,color:'132662'}},{text:'● ',options:{color:statusColor(it.status).replace('#','')}},{text:it.status||'',options:{color:'56618A'}}],{x,y:top-0.3,w:colW,h:0.26,fontFace:FONT,fontSize:8,margin:0,valign:'middle'});
-      let card=null; if(h2c){ try{ card=await renderPostCard(it, h2c); }catch(e){ console.error(e); } }
-      if(card){ let w=colW, h=colW*card.h/card.w; if(h>maxH){ h=maxH; w=maxH*card.w/card.h; } s.addImage({data:card.data, x:x+(colW-w)/2, y:top, w, h}); }
-      else { s.addText((it.title||'')+'\n\n'+(it.copy||''),{shape:pptx.ShapeType.rect,x,y:top,w:colW,h:maxH,fill:{color:'FFFFFF'},line:{color:'D6DEEB',width:0.75},fontFace:FONT,fontSize:7,color:'2B2B2B',valign:'top',margin:[6,6,6,6],fit:'shrink'}); }
+  // Week slides from the current week: each week's posts as LinkedIn-style preview cards, left to right, full copy shown.
+  const h2c=await ensureLib('html2canvas','https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js') || await ensureLib('html2canvas','https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js');
+  const sortPosts=(a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||'');
+  const mS=monthStart||new Date(tToday.getFullYear(),tToday.getMonth(),1), mE=addMonths(mS,1); const firstMon=mondayOnOrBefore(mS); const horizon=mE;
+  const weeks=[]; for(let w=new Date(firstMon); w<horizon; w=addDays(w,7)){ const we=addDays(w,7); const posts=plan.items.filter(it=>{ const d=pd(it.date); return d && d>=w && d<we; }).sort(sortPosts); weeks.push({w, posts}); }
+  for(const wk of weeks){ const pages=Math.max(1, Math.ceil(wk.posts.length/5));
+    for(let pg=0; pg<pages; pg++){ const slice=wk.posts.slice(pg*5,(pg+1)*5);
+      const s=pptx.addSlide(); s.background={color:'FFFFFF'};
+      addHeader(s, 'Week commencing '+fmtShort(wk.w)+' '+wk.w.getFullYear()+'  ·  '+wk.posts.length+' post'+(wk.posts.length===1?'':'s')+(pages>1?'  ·  '+(pg+1)+' of '+pages:''), false);
+      const gap=0.18, n=5, colW=(W-2*M-gap*(n-1))/n, top=1.7, maxH=7.5-top-0.45;
+      if(!slice.length) s.addText('No posts scheduled this week.',{x:M,y:top,w:W-2*M,h:0.5,fontFace:FONT,fontSize:12,color:'56618A',margin:0});
+      for(let i=0;i<slice.length;i++){ const it=slice[i]; const x=M+i*(colW+gap); const p=pillarOf(it.pillar)||UNASSIGNED;
+        s.addText(fmtDay(it.date)+(it.time?' · '+it.time:''),{x,y:top-0.5,w:colW,h:0.24,fontFace:FONT,fontSize:9,bold:true,color:'132662',margin:0,valign:'middle'});
+        s.addText([{text:'● ',options:{color:p.color.replace('#','')}},{text:p.name+'  ',options:{bold:true,color:'132662'}},{text:'● ',options:{color:statusColor(it.status).replace('#','')}},{text:it.status||'',options:{color:'56618A'}}],{x,y:top-0.27,w:colW,h:0.22,fontFace:FONT,fontSize:7.5,margin:0,valign:'middle'});
+        let card=null; if(h2c){ try{ card=await renderPostCard(it, h2c); }catch(e){ console.error(e); } }
+        if(card){ let w=colW, h=colW*card.h/card.w; if(h>maxH){ h=maxH; w=maxH*card.w/card.h; } s.addImage({data:card.data, x:x+(colW-w)/2, y:top, w, h}); }
+        else { s.addText((it.title||'')+'\n\n'+(it.copy||''),{shape:pptx.ShapeType.rect,x,y:top,w:colW,h:maxH,fill:{color:'FFFFFF'},line:{color:'D6DEEB',width:0.75},fontFace:FONT,fontSize:7,color:'2B2B2B',valign:'top',margin:[6,6,6,6],fit:'shrink'}); }
+      }
     }
   }
   const blob=await pptx.write({outputType:'blob'});
-  await saveFile('LinkedIn content calendar '+stamp()+'.pptx', blob);
+  await saveFile('LinkedIn content calendar '+MONTHS_LONG[(monthStart||tToday).getMonth()]+' '+(monthStart||tToday).getFullYear()+'.pptx', blob);
 }
 async function exportJson(){ await saveFile('linkedin-content-calendar-'+stamp()+'.json', new Blob([JSON.stringify(plan,null,1)],{type:'application/json'})); }
 
@@ -829,7 +846,7 @@ function wire(){
   const menu=$('#exportMenu'), btn=$('#btnExport');
   btn.onclick=()=>{ menu.hidden=!menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); if(!menu.hidden){ const r=btn.getBoundingClientRect(); menu.classList.toggle('flip', r.left + menu.offsetWidth > window.innerWidth - 12); } };
   document.addEventListener('click', e=>{ if(!e.target.closest('.menu')){ menu.hidden=true; btn.setAttribute('aria-expanded','false'); } });
-  menu.querySelectorAll('button').forEach(b=>b.onclick=async ()=>{ menu.hidden=true; const k=b.dataset.export; if(k==='import'){ $('#fileImport').click(); return; } toast(k==='pptx'?'Building the PowerPoint…':k==='xlsx'?'Building the workbook…':'Preparing file…', 1800); try{ if(k==='xlsx') await exportXlsx(); else if(k==='pptx') await exportPptx(); else await exportJson(); }catch(e){ console.error(e); toast('Export failed: '+(e&&e.message||e)); } });
+  menu.querySelectorAll('button').forEach(b=>b.onclick=async ()=>{ menu.hidden=true; const k=b.dataset.export; if(k==='import'){ $('#fileImport').click(); return; } let m=null; if(k==='pptx'){ m=await chooseMonth(); if(!m) return; } toast(k==='pptx'?'Building the PowerPoint…':k==='xlsx'?'Building the workbook…':'Preparing file…', 1800); try{ if(k==='xlsx') await exportXlsx(); else if(k==='pptx') await exportPptx(m); else await exportJson(); }catch(e){ console.error(e); toast('Export failed: '+(e&&e.message||e)); } });
   const fi=$('#fileImport'); if(fi) fi.onchange=e=>{ const f=e.target.files[0]; if(f) importFile(f); e.target.value=''; };
   $('#stage').addEventListener('click', e=>{ const pv=e.target.closest('[data-preview]'); if(pv){ const it=plan.items.find(i=>i.id===pv.dataset.preview); if(it) openPreview(previewFrom(it)); return; } const o=e.target.closest('[data-open]'); if(o){ openItem(o.dataset.open,false); return; } const a=e.target.closest('[data-add]'); if(a){ addItem(a.dataset.add); return; } const ad=e.target.closest('[data-add-date]'); if(ad) addItem('', ad.dataset.addDate); });
   $('#stage').addEventListener('keydown', e=>{ if(e.key==='Enter'){ const o=e.target.closest('[data-open]'); if(o) openItem(o.dataset.open,false); } });
