@@ -91,7 +91,9 @@ button{cursor:pointer}
 .btn.danger{color:var(--bad);border-color:var(--bad)}
 .btn.small{padding:4px 9px;font-size:12px}
 .menu{position:relative}
-.menu .pop{position:absolute;right:0;top:calc(100% + 6px);background:var(--bg);border:1px solid var(--line-strong);border-radius:10px;box-shadow:var(--shadow);min-width:250px;padding:6px;z-index:30;display:flex;flex-direction:column}
+.menu .pop{position:absolute;left:0;top:calc(100% + 6px);}
+.menu .pop.flip{left:auto;right:0}
+.menu .pop{background:var(--bg);border:1px solid var(--line-strong);border-radius:10px;box-shadow:var(--shadow);min-width:250px;padding:6px;z-index:30;display:flex;flex-direction:column}
 .menu .pop button{border:0;background:transparent;text-align:left;padding:8px 10px;border-radius:7px;font-weight:500;color:var(--ink)}
 .menu .pop button:hover{background:var(--surface-2)}
 .menu .pop small{display:block;color:var(--muted);font-weight:400}
@@ -796,7 +798,7 @@ function wire(){
   $('#btnAdd').onclick=()=>addItem();
   $('#btnPillars').onclick=openPillars; $('#btnOverview').onclick=openOverview;
   const menu=$('#exportMenu'), btn=$('#btnExport');
-  btn.onclick=()=>{ menu.hidden=!menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); };
+  btn.onclick=()=>{ menu.hidden=!menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); if(!menu.hidden){ const r=btn.getBoundingClientRect(); menu.classList.toggle('flip', r.left + menu.offsetWidth > window.innerWidth - 12); } };
   document.addEventListener('click', e=>{ if(!e.target.closest('.menu')){ menu.hidden=true; btn.setAttribute('aria-expanded','false'); } });
   menu.querySelectorAll('button').forEach(b=>b.onclick=async ()=>{ menu.hidden=true; const k=b.dataset.export; if(k==='import'){ $('#fileImport').click(); return; } toast(k==='pptx'?'Building the PowerPoint…':k==='xlsx'?'Building the workbook…':'Preparing file…', 1800); try{ if(k==='xlsx') await exportXlsx(); else if(k==='pptx') await exportPptx(); else await exportJson(); }catch(e){ console.error(e); toast('Export failed: '+(e&&e.message||e)); } });
   const fi=$('#fileImport'); if(fi) fi.onchange=e=>{ const f=e.target.files[0]; if(f) importFile(f); e.target.value=''; };
