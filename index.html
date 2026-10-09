@@ -771,13 +771,12 @@ async function exportPptx(monthStart){
   const h2c=await ensureLib('html2canvas','https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js') || await ensureLib('html2canvas','https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js');
   const sortPosts=(a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||'');
   const mS=monthStart||new Date(tToday.getFullYear(),tToday.getMonth(),1), mE=addMonths(mS,1); const firstMon=mondayOnOrBefore(mS); const horizon=mE;
-  const weeks=[]; for(let w=new Date(firstMon); w<horizon; w=addDays(w,7)){ const we=addDays(w,7); const posts=plan.items.filter(it=>{ const d=pd(it.date); return d && d>=w && d<we; }).sort(sortPosts); weeks.push({w, posts}); }
-  for(const wk of weeks){ const pages=Math.max(1, Math.ceil(wk.posts.length/5));
+  const weeks=[]; for(let w=new Date(firstMon); w<horizon; w=addDays(w,7)){ const we=addDays(w,7); const posts=plan.items.filter(it=>{ const d=pd(it.date); return d && d>=w && d<we; }).sort(sortPosts); if(posts.length) weeks.push({w, posts}); }
+  for(const wk of weeks){ const pages=Math.ceil(wk.posts.length/5);
     for(let pg=0; pg<pages; pg++){ const slice=wk.posts.slice(pg*5,(pg+1)*5);
       const s=pptx.addSlide(); s.background={color:'FFFFFF'};
       addHeader(s, 'Week commencing '+fmtShort(wk.w)+' '+wk.w.getFullYear()+'  ·  '+wk.posts.length+' post'+(wk.posts.length===1?'':'s')+(pages>1?'  ·  '+(pg+1)+' of '+pages:''), false);
       const gap=0.18, n=5, colW=(W-2*M-gap*(n-1))/n, top=1.7, maxH=7.5-top-0.45;
-      if(!slice.length) s.addText('No posts scheduled this week.',{x:M,y:top,w:W-2*M,h:0.5,fontFace:FONT,fontSize:12,color:'56618A',margin:0});
       for(let i=0;i<slice.length;i++){ const it=slice[i]; const x=M+i*(colW+gap); const p=pillarOf(it.pillar)||UNASSIGNED;
         s.addText(fmtDay(it.date)+(it.time?' · '+it.time:''),{x,y:top-0.5,w:colW,h:0.24,fontFace:FONT,fontSize:9,bold:true,color:'132662',margin:0,valign:'middle'});
         s.addText([{text:'● ',options:{color:p.color.replace('#','')}},{text:p.name+'  ',options:{bold:true,color:'132662'}},{text:'● ',options:{color:statusColor(it.status).replace('#','')}},{text:it.status||'',options:{color:'56618A'}}],{x,y:top-0.27,w:colW,h:0.22,fontFace:FONT,fontSize:7.5,margin:0,valign:'middle'});
