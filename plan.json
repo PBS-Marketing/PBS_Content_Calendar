@@ -1,0 +1,259 @@
+{
+ "version": 2,
+ "savedAt": "2026-10-09T20:55:00.000Z",
+ "title": "LinkedIn Content Calendar",
+ "lists": {
+  "channels": [
+   "Brand Services",
+   "Twelve",
+   "France & Romania",
+   "Service Graphics",
+   "Image Factory",
+   "Vox",
+   "Octink"
+  ],
+  "formats": [
+   "Text",
+   "Single image",
+   "Carousel",
+   "Video",
+   "Poll",
+   "Article",
+   "Event",
+   "Newsletter"
+  ],
+  "objectives": [
+   "Awareness",
+   "Engagement",
+   "Website traffic",
+   "Lead generation",
+   "Recruitment",
+   "Community building",
+   "Recognition"
+  ],
+  "statuses": [
+   "In Draft",
+   "Under Review",
+   "Approved",
+   "Published",
+   "Postponed"
+  ]
+ },
+ "pillars": [
+  {
+   "id": "companynews",
+   "name": "Company news",
+   "color": "#132662",
+   "purpose": "Share our milestones and keep the market informed",
+   "example": "Announcements, new appointments, awards, partnerships",
+   "ambition": "Brand, Financial"
+  },
+  {
+   "id": "leadership",
+   "name": "Leadership",
+   "color": "#132662",
+   "purpose": "Build trust and industry credibility",
+   "example": "Executive articles, market commentary, event reflections",
+   "ambition": "Brand, Uniqueness"
+  },
+  {
+   "id": "commercial",
+   "name": "Commercial",
+   "color": "#005FFF",
+   "purpose": "Support sales and brand positioning",
+   "example": "Case studies, client wins, product launches, research",
+   "ambition": "Financial, Balanced Operations, Brand"
+  },
+  {
+   "id": "innovation",
+   "name": "Innovation",
+   "color": "#4087FF",
+   "purpose": "Showcase capability, uniqueness",
+   "example": "Centres of Excellence, technology, behind-the-scenes",
+   "ambition": "Uniqueness, Balanced Operations, Brand"
+  },
+  {
+   "id": "thoughtleadership",
+   "name": "Thought Leadership",
+   "color": "#1E63D6",
+   "purpose": "Lead the conversation on the issues our buyers face",
+   "example": "Point-of-view articles, roundtable write-ups, industry reports, webinars",
+   "ambition": "Uniqueness, Brand"
+  },
+  {
+   "id": "abm",
+   "name": "ABM",
+   "color": "#5C9CFF",
+   "purpose": "Win and grow priority accounts",
+   "example": "Tailored account content, personalised outreach, sector insight packs",
+   "ambition": "Financial, Uniqueness"
+  },
+  {
+   "id": "gtm",
+   "name": "GTM",
+   "color": "#9DC2FF",
+   "purpose": "Take our services and CoEs to market",
+   "example": "Service launches, campaign assets, sales enablement content, event activity",
+   "ambition": "Financial, Balanced Operations"
+  },
+  {
+   "id": "peopleculture",
+   "name": "People & Culture",
+   "color": "#D91C59",
+   "purpose": "Strengthen employer brand, resonate",
+   "example": "Employee stories, recognition, events, careers",
+   "ambition": "Resonate Culture, Brand"
+  },
+  {
+   "id": "sustainability",
+   "name": "Sustainability",
+   "color": "#1F9D55",
+   "purpose": "Prove our environmental and social commitments",
+   "example": "Carbon data, material innovation, ESG progress, certifications",
+   "ambition": "Brand, Balanced Operations, Resonate Culture"
+  }
+ ],
+ "overview": {
+  "objectives": [
+   "Support commercial growth by increasing brand awareness, generating demand and showcasing the breadth of our capabilities.",
+   "Strengthen employer brand by positioning Brand Services as an attractive place to work through authentic people-led storytelling.",
+   "Provide a consistent corporate narrative across all business units, reducing duplication and confusion.",
+   "Create clear governance, ownership and editorial standards while allowing local teams to contribute."
+  ],
+  "governance": [
+   {
+    "area": null,
+    "details": "Corporate"
+   },
+   {
+    "area": null,
+    "details": "Clients"
+   },
+   {
+    "area": null,
+    "details": "Talent"
+   },
+   {
+    "area": null,
+    "details": "France & Romania"
+   }
+  ]
+ },
+ "items": [
+  {
+   "id": "p202610120",
+   "date": "2026-10-12",
+   "time": "2pm GMT",
+   "channel": "Brand Services",
+   "campaign": "PBS Launch",
+   "pillar": "companynews",
+   "format": "Carousel",
+   "objective": "Awareness",
+   "audience": "All Followers",
+   "title": "PBS Launch",
+   "copy": "You've followed us as Paragon Global Brands.\nHere's who you'll be seeing from today. ↓\nOver the past year, our specialist businesses have come together behind the scenes as one connected team. Strategy, creative, production, fulfilment and measurement, working as one system.\nToday, that team has a name of its own: Paragon Brand Services.\nSame people. Same expertise. Now one partner from brief to shelf, across 29 countries.\nThis page is where you'll find us, and all of our services, from now on. Stay connected, and come and see the whole of us on our new website: paragonbrandservices.com\n#ParagonBrandServices #MarketingThatMoves",
+   "link": "PBS Website",
+   "asset": "TBC - with Beth",
+   "owner": "Jodie",
+   "approver": "Simon",
+   "status": "In Draft",
+   "impressions": null,
+   "engagements": null,
+   "engagementRate": null,
+   "clicks": null,
+   "followers": null
+  },
+  {
+   "id": "p202610131",
+   "date": "2026-10-13",
+   "time": "11:00",
+   "channel": "Brand Services",
+   "campaign": "Global ReBrands",
+   "pillar": "gtm",
+   "format": "",
+   "objective": "",
+   "audience": "All Followers",
+   "title": "GTM Rebrands",
+   "copy": "Clients often plan a global rebrand around a 6-month timeline. Then reality arrives: permit approvals, landlord sign-off, manufacturing lead times, dozens of local systems that don't move on your schedule.\nWe've seen a single building permit take 15 months because of local hurricane legislation. Combine that with a 12-month IPO deadline and you have a genuine problem.\nBring an execution partner in early. Within a few minutes of reviewing the plans, we can give you a realistic timeline, phased around permitting, landlord cycles and logistics.\nWant the full breakdown of the five traps that catch most rebrands out? Read the Execution Gap. Link below.",
+   "link": "",
+   "asset": "",
+   "owner": "John C",
+   "approver": "Simon",
+   "status": "In Draft",
+   "impressions": null,
+   "engagements": null,
+   "engagementRate": null,
+   "clicks": null,
+   "followers": null
+  },
+  {
+   "id": "p202610142",
+   "date": "2026-10-14",
+   "time": "11am GMT",
+   "channel": "Brand Services",
+   "campaign": "POPAI Award",
+   "pillar": "companynews",
+   "format": "Single image",
+   "objective": "Recognition",
+   "audience": "All Followers",
+   "title": "TBC - with Austeja",
+   "copy": "TBC - with Austeja",
+   "link": "PBS Website",
+   "asset": "TBC - with Beth",
+   "owner": "Austeja",
+   "approver": "Mitch / Marianne",
+   "status": "In Draft",
+   "impressions": null,
+   "engagements": null,
+   "engagementRate": null,
+   "clicks": null,
+   "followers": null
+  },
+  {
+   "id": "p202610153",
+   "date": "2026-10-15",
+   "time": "11:00",
+   "channel": "Brand Services",
+   "campaign": "Procurement 10 Questions Q1",
+   "pillar": "thoughtleadership",
+   "format": "Carousel",
+   "objective": "",
+   "audience": "All Followers",
+   "title": "10 Questions Thought Leadership",
+   "copy": "At ProcureCon 2026 we hosted a roundtable with procurement leaders on one topic: the ten questions every procurement leader is secretly asking. Not the questions in the board paper. The ones underneath.We gathered them over months of conversations across retail, FMCG, financial services and hospitality, then asked the room to rank them. Three came out well ahead: AI, risk and cost. Here’s question one. The one the room ranked hottest.\n\nRead more about the 10 questions: [link]",
+   "link": "https://10procuremenquestions.netlify.app/",
+   "asset": "https://paragoncccom.sharepoint.com/:b:/s/PBSMarketingPlannerContent/IQBv_5ge7KBdRbSvyhqvGU1DAZNLr57i-50MNcGN7e9H5xU?e=EYqDdG",
+   "owner": "John C",
+   "approver": "Simon",
+   "status": "In Draft",
+   "impressions": null,
+   "engagements": null,
+   "engagementRate": null,
+   "clicks": null,
+   "followers": null
+  },
+  {
+   "id": "p202610164",
+   "date": "2026-10-16",
+   "time": "11am GMT",
+   "channel": "Brand Services",
+   "campaign": "Recruit/Testimonials",
+   "pillar": "peopleculture",
+   "format": "Carousel",
+   "objective": "Recruitment",
+   "audience": "All Followers",
+   "title": "Big ambitions. Great people. Exciting opportunities. 🚀",
+   "copy": "The questions came from months of conversations with procurement leaders across retail, FMCG, financial services and hospitality. They’re the questions that sit underneath the ones in the board paper. We put them to the room and asked the leaders present to rank them by how hard each one is being felt.",
+   "link": "mailto:florent.orsini@paragon-cc.fr",
+   "asset": "Recruitment - Oct 16",
+   "owner": "Jodie",
+   "approver": "Marianne / Florent",
+   "status": "Approved",
+   "impressions": null,
+   "engagements": null,
+   "engagementRate": null,
+   "clicks": null,
+   "followers": null
+  }
+ ]
+}
