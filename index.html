@@ -285,16 +285,14 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
     <button type="button" class="btn" id="btnOverview">Overview</button>
     <button type="button" class="btn" id="btnPillars">Pillars</button>
     <div class="menu">
-      <button type="button" class="btn" id="btnExport" aria-haspopup="true" aria-expanded="false">Import / Export ▾</button>
+      <button type="button" class="btn" id="btnExport" aria-haspopup="true" aria-expanded="false">Export ▾</button>
       <div class="pop" id="exportMenu" hidden>
         <button type="button" data-export="xlsx">Excel workbook<small>Same columns as the source calendar, plus overview and lists</small></button>
         <button type="button" data-export="pptx">PowerPoint deck<small>Timeline slides plus one slide per pillar</small></button>
         <button type="button" data-export="json">Plan data (JSON)<small>Back up or move the calendar</small></button>
-        <button type="button" data-export="import">Import from Excel…<small>Replace the posts from a calendar workbook (.xlsx or .csv)</small></button>
       </div>
     </div>
     <button type="button" class="btn primary" id="btnAdd">+ Add post</button>
-    <input type="file" id="fileImport" accept=".xlsx,.xls,.csv,.json" hidden>
   </div>
 
   <div class="stage" id="stage"></div>
@@ -468,7 +466,7 @@ function renderTimeline(){
   html+='</div>';
   html+='<div class="legend foot pin"><span class="key">Status</span>'+plan.lists.statuses.map(s=>'<span class="k"><i style="--c:'+statusColor(s)+'"></i>'+esc(s)+'</span>').join('')+'<span class="k"><i class="pkey">P</i>Post preview ready</span></div>';
   if(!plan.pillars.length) html='<div class="empty">No pillars yet. Use Pillars to add the first one.</div>';
-  else if(!plan.items.length) html+='<div class="empty over">No posts yet. Use Import / Export → Import from Excel to load the calendar, or + Add post.</div>';
+  else if(!plan.items.length) html+='<div class="empty over">No posts yet. Use + Add post to start the calendar.</div>';
   stage.innerHTML=html;
 }
 // Calendar view: one month page per month in range, laid out like the workbook's post schedule, posts coloured by pillar.
@@ -643,7 +641,7 @@ function openOverview(){
     '<h3>Governance</h3><div class="gov">'+(ov.governance||[]).map(g=>'<div><b>'+esc(g.area)+'</b><p>'+esc(g.details)+'</p></div>').join('')+'</div>'+
     '<h3>Content pillars</h3><table><thead><tr><th>Pillar</th><th>Purpose</th><th>Example content</th><th>Ambition</th></tr></thead><tbody>'+plan.pillars.map(p=>'<tr><td style="white-space:nowrap"><span class="pdot" style="--pc:'+p.color+'"></span>'+esc(p.name)+'</td><td>'+esc(p.purpose)+'</td><td>'+esc(p.example)+'</td><td>'+esc(p.ambition)+'</td></tr>').join('')+'</tbody></table>'+
     '<h3>Lists</h3><table><tbody><tr><th>LinkedIn channels</th><td>'+esc(plan.lists.channels.join(', '))+'</td></tr><tr><th>Formats</th><td>'+esc(plan.lists.formats.join(', '))+'</td></tr><tr><th>Objectives</th><td>'+esc(plan.lists.objectives.join(', '))+'</td></tr><tr><th>Statuses</th><td>'+esc(plan.lists.statuses.join(', '))+'</td></tr></tbody></table>'+
-    '<p class="hint">Edit the overview and lists in the Excel workbook and re-import, or edit pillars under Pillars.</p></div><footer><div class="spacer"></div><button type="button" class="btn primary" id="oOk">Close</button></footer></aside>';
+    '<p class="hint">Edit pillars under Pillars.</p></div><footer><div class="spacer"></div><button type="button" class="btn primary" id="oOk">Close</button></footer></aside>';
   const close=()=>{ host.innerHTML=''; }; $('#oClose').onclick=close; $('#oOk').onclick=close; $('#scrim').onclick=close;
 }
 
@@ -801,7 +799,7 @@ function wire(){
   btn.onclick=()=>{ menu.hidden=!menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); };
   document.addEventListener('click', e=>{ if(!e.target.closest('.menu')){ menu.hidden=true; btn.setAttribute('aria-expanded','false'); } });
   menu.querySelectorAll('button').forEach(b=>b.onclick=async ()=>{ menu.hidden=true; const k=b.dataset.export; if(k==='import'){ $('#fileImport').click(); return; } toast(k==='pptx'?'Building the PowerPoint…':k==='xlsx'?'Building the workbook…':'Preparing file…', 1800); try{ if(k==='xlsx') await exportXlsx(); else if(k==='pptx') await exportPptx(); else await exportJson(); }catch(e){ console.error(e); toast('Export failed: '+(e&&e.message||e)); } });
-  $('#fileImport').onchange=e=>{ const f=e.target.files[0]; if(f) importFile(f); e.target.value=''; };
+  const fi=$('#fileImport'); if(fi) fi.onchange=e=>{ const f=e.target.files[0]; if(f) importFile(f); e.target.value=''; };
   $('#stage').addEventListener('click', e=>{ const pv=e.target.closest('[data-preview]'); if(pv){ const it=plan.items.find(i=>i.id===pv.dataset.preview); if(it) openPreview(previewFrom(it)); return; } const o=e.target.closest('[data-open]'); if(o){ openItem(o.dataset.open,false); return; } const a=e.target.closest('[data-add]'); if(a){ addItem(a.dataset.add); return; } const ad=e.target.closest('[data-add-date]'); if(ad) addItem('', ad.dataset.addDate); });
   $('#stage').addEventListener('keydown', e=>{ if(e.key==='Enter'){ const o=e.target.closest('[data-open]'); if(o) openItem(o.dataset.open,false); } });
   let rt; window.addEventListener('resize', ()=>{ clearTimeout(rt); rt=setTimeout(()=>{ if(view.mode==='weekly') renderTimeline(); }, 120); });
