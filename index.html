@@ -43,6 +43,7 @@ button{cursor:pointer}
 .top .logo{margin-left:auto;height:44px;width:auto;max-width:40vw;flex:none}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);align-items:center}
 .legend.foot{padding:6px 2px 2px;border-top:1px solid var(--line);margin-top:4px}
+.legend.foot.pin{position:sticky;left:0;bottom:0;z-index:4;background:var(--bg);width:100%;max-width:100%;padding:8px 12px;margin-top:0;box-sizing:border-box}
 .legend .k{display:inline-flex;align-items:center;gap:5px}
 .legend .k i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c)}
 .legend .key{font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.06em;font-size:10px;margin-right:2px}
@@ -402,7 +403,7 @@ function renderTimeline(){
     html+='</div></div>';
   });
   html+='</div>';
-  html+='<div class="legend foot" style="padding-left:12px"><span class="key">Status</span>'+plan.lists.statuses.map(s=>'<span class="k"><i style="--c:'+statusColor(s)+'"></i>'+esc(s)+'</span>').join('')+'</div>';
+  html+='<div class="legend foot pin"><span class="key">Status</span>'+plan.lists.statuses.map(s=>'<span class="k"><i style="--c:'+statusColor(s)+'"></i>'+esc(s)+'</span>').join('')+'</div>';
   if(!plan.pillars.length) html='<div class="empty">No pillars yet. Use Pillars to add the first one.</div>';
   else if(!plan.items.length) html+='<div class="empty over">No posts yet. Use Import / Export → Import from Excel to load the calendar, or + Add post.</div>';
   stage.innerHTML=html;
