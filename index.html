@@ -170,6 +170,52 @@ table.perf td.m{font-weight:600;color:var(--fg);width:45%}
 table.perf input{width:100%;padding:5px 7px;border:1px solid var(--line-strong);border-radius:6px;background:var(--bg);color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
 table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600;color:var(--fg)}
 .hint{font-size:11px;color:var(--muted)}
+.pbtn{position:absolute;width:18px;height:18px;border-radius:50%;border:0;background:#fff;color:#132662;font-family:var(--font-display);font-weight:800;font-size:11px;line-height:18px;padding:0;text-align:center;box-shadow:0 0 0 1.5px rgba(19,38,98,.35);z-index:2}
+.pbtn:hover{background:var(--accent);color:#fff;box-shadow:0 0 0 1.5px #fff}
+.bar.haspv{padding-right:30px}
+.pkey{display:inline-block;width:14px;height:14px;border-radius:50%;background:#fff;color:#132662;font-family:var(--font-display);font-weight:800;font-size:9px;line-height:14px;text-align:center;box-shadow:0 0 0 1.5px rgba(19,38,98,.5)}
+.cal-row{display:flex;align-items:center;gap:3px;min-width:0}
+.cal-row .cal-post{flex:1}
+.cal-row .pbtn{position:static;flex:none}
+.copyrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+.assetbox{border:1px dashed var(--line-strong);border-radius:8px;padding:10px;display:flex;gap:12px;align-items:center;background:var(--surface)}
+.assetbox img{width:120px;height:80px;object-fit:cover;border-radius:6px;flex:none;background:#fff}
+.assetbox .fileicon{width:120px;height:80px;border-radius:6px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--muted);flex:none;letter-spacing:.06em}
+.assetbox .meta{flex:1;min-width:0;font-size:12px}
+.assetbox .meta b{display:block;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.assetbox .ops{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+/* LinkedIn post preview: deliberately fixed light styling, it mocks the LinkedIn feed */
+.li-wrap{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:28px 16px}
+.li-scrim{position:fixed;inset:0;background:rgba(5,20,43,.55);z-index:49}
+.li-col{width:min(555px,100%);display:flex;flex-direction:column;gap:10px}
+.li-bar{display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:12px}
+.li-bar .btn{background:#fff;color:#132662;border-color:#fff}
+.li-card{background:#fff;color:rgba(0,0,0,.9);border-radius:8px;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;box-shadow:0 0 0 1px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.15);overflow:hidden;font-size:14px}
+.li-head{display:flex;gap:8px;padding:12px 16px 0;align-items:flex-start}
+.li-avatar{width:48px;height:48px;border-radius:4px;background:#fff;border:1px solid #e6e6e6;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none}
+.li-avatar img{width:44px;height:auto}
+.li-who{flex:1;min-width:0;line-height:1.25}
+.li-name{font-weight:600;font-size:14px;color:rgba(0,0,0,.9)}
+.li-sub{font-size:12px;color:rgba(0,0,0,.6)}
+.li-sub .g{display:inline-block;width:12px;height:12px;border-radius:50%;border:1.5px solid rgba(0,0,0,.6);vertical-align:-2px;margin-left:2px}
+.li-more{color:rgba(0,0,0,.6);font-weight:700;letter-spacing:.1em;padding:0 4px}
+.li-body{padding:8px 16px 10px;line-height:1.43;white-space:pre-wrap;word-wrap:break-word}
+.li-body .lk{color:#0a66c2;font-weight:600}
+.li-body .morebtn{border:0;background:transparent;color:rgba(0,0,0,.6);font:inherit;padding:0;cursor:pointer}
+.li-body .morebtn:hover{color:#0a66c2;text-decoration:underline}
+.li-media{background:#f3f2f0;border-top:1px solid #eee}
+.li-media img{display:block;width:100%;max-height:560px;object-fit:cover}
+.li-media .ph{aspect-ratio:1.91/1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(0,0,0,.5);gap:4px;background:linear-gradient(135deg,#eef2f9,#dfe7f5)}
+.li-media .ph b{font-size:22px;color:#132662}
+.li-link{display:flex;gap:12px;align-items:center;padding:10px 16px;background:#f3f2f0;border-top:1px solid #eee;text-decoration:none;color:inherit}
+.li-link .dom{font-size:12px;color:rgba(0,0,0,.6)}
+.li-link b{display:block;font-size:14px}
+.li-social{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;font-size:12px;color:rgba(0,0,0,.6);border-bottom:1px solid #e8e8e8}
+.li-react{display:inline-flex;align-items:center;gap:6px}
+.li-react i{display:inline-block;width:16px;height:16px;border-radius:50%;margin-right:-6px;border:1.5px solid #fff}
+.li-actions{display:flex;justify-content:space-around;padding:4px 8px}
+.li-actions span{display:inline-flex;align-items:center;gap:6px;padding:10px 8px;font-weight:600;font-size:14px;color:rgba(0,0,0,.6)}
+.li-actions svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
 .confirm{display:flex;align-items:center;gap:8px;background:color-mix(in srgb,var(--bad) 10%,var(--bg));border:1px solid var(--bad);padding:8px 10px;border-radius:8px;width:100%}
 .plist{display:flex;flex-direction:column;gap:8px}
 .prow{display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:start;border:1px solid var(--line);border-radius:8px;padding:8px}
@@ -265,7 +311,7 @@ const COLS = [['date','Publish date'],['time','Publish time'],['channel','Linked
 
 let plan = null;
 let view = {mode:'calendar', start:'2026-10', len:1, wstart:'', weeks:4, channel:'', status:'', owner:'', q:''};
-let artifactCap = null, downloadsCap = null, capsReady = false;
+let artifactCap = null, downloadsCap = null, assetsCap = null, capsReady = false;
 let saveMode = 'local';
 
 /* ---------- helpers ---------- */
@@ -291,12 +337,13 @@ function statusColor(s){ if(STATUS_COLOR[s]) return STATUS_COLOR[s]; let h=0; fo
 function pillarOf(id){ return plan.pillars.find(p=>p.id===id) || null; }
 function engRate(it){ if(it.engagementRate!=null && it.engagementRate!=='') return Number(it.engagementRate); if(it.engagements!=null && it.impressions) return it.engagements/it.impressions; return null; }
 function pctText(r){ return r==null?'':(r*100).toFixed(2)+'%'; }
-function blankItemRaw(d){ return {id:uid(), date:'', time:'', channel:'', campaign:'', pillar:'', format:'', objective:'', audience:'', title:'', copy:'', link:'', asset:'', owner:'', approver:'', status:((d.lists&&d.lists.statuses&&d.lists.statuses[0])||'In Draft'), impressions:null, engagements:null, engagementRate:null, clicks:null, followers:null}; }
+function blankItemRaw(d){ return {id:uid(), date:'', time:'', channel:'', campaign:'', pillar:'', format:'', objective:'', audience:'', title:'', copy:'', link:'', asset:'', owner:'', approver:'', status:((d.lists&&d.lists.statuses&&d.lists.statuses[0])||'In Draft'), assetFile:null, impressions:null, engagements:null, engagementRate:null, clicks:null, followers:null}; }
 function blankItem(pillar){ const it=blankItemRaw(plan); it.date=iso(today()); it.channel=plan.lists.channels[0]||''; it.pillar=pillar||(plan.pillars[0]?plan.pillars[0].id:''); return it; }
 function normalise(data){
   const d = Object.assign({version:2, title:'LinkedIn Content Calendar', pillars:[], items:[], lists:{}, overview:{}}, data||{});
   d.lists = Object.assign({channels:[], formats:[], objectives:[], statuses:Object.keys(STATUS_COLOR)}, d.lists||{});
   d.overview = Object.assign({objectives:[], governance:[]}, d.overview||{});
+  d.channelMeta = Object.assign({'Brand Services':{display:'Paragon Brand Services', followers:'26,553 followers'}}, d.channelMeta||{});
   d.pillars = (d.pillars||[]).map(p=>Object.assign({purpose:'',example:'',ambition:''}, p));
   d.items = (d.items||[]).map(it => { const o=Object.assign(blankItemRaw(d), it); ['impressions','engagements','clicks','followers','engagementRate'].forEach(k=>{ o[k]=(o[k]===''||o[k]==null||isNaN(Number(o[k])))?null:Number(o[k]); }); return o; });
   return d;
@@ -397,13 +444,15 @@ function renderTimeline(){
     if(weekly){ cols.forEach((c,ci)=>{ if(c.wknd) html+='<div class="wkndcol" style="left:'+(ci*colw)+'px;width:'+colw+'px"></div>'; }); if(todayCi>=0 && !cols[todayCi].wknd) html+='<div class="todaycol" style="left:'+(todayCi*colw)+'px;width:'+colw+'px"></div>'; }
     bars.forEach(b=>{ const it=b.it; const d=pd(it.date); const top=5+b.lane*30;
       const lead = weekly ? (cols[colIndexFor(d,cols)].wknd ? DAYS[d.getDay()].slice(0,2)+' '+d.getDate() : '') : DAYS[d.getDay()].slice(0,2)+' '+d.getDate();
-      html+='<button type="button" class="bar'+(light?' light':'')+'" data-open="'+it.id+'" style="left:'+b.left+'px;width:'+(b.right-b.left)+'px;top:'+top+'px;--sc:'+statusColor(it.status)+'" title="'+esc(fmtDay(it.date))+(it.time?' '+esc(it.time):'')+' · '+esc(it.channel)+' · '+esc(it.status)+(it.owner?' · '+esc(it.owner):'')+'"><span>'+(lead?'<em>'+esc(lead)+'</em> · ':'')+esc(it.title||'(untitled)')+'</span><i class="st"></i></button>';
+      const pv=canPreview(it);
+      html+='<button type="button" class="bar'+(light?' light':'')+(pv?' haspv':'')+'" data-open="'+it.id+'" style="left:'+b.left+'px;width:'+(b.right-b.left)+'px;top:'+top+'px;--sc:'+statusColor(it.status)+'" title="'+esc(fmtDay(it.date))+(it.time?' '+esc(it.time):'')+' · '+esc(it.channel)+' · '+esc(it.status)+(it.owner?' · '+esc(it.owner):'')+'"><span>'+(lead?'<em>'+esc(lead)+'</em> · ':'')+esc(it.title||'(untitled)')+'</span><i class="st"></i></button>';
+      if(pv) html+='<button type="button" class="pbtn" data-preview="'+it.id+'" title="Post preview" aria-label="Post preview" style="left:'+(b.right-25)+'px;top:'+(top+3)+'px">P</button>';
     });
     if(nowX!=null) html+='<div class="nowline" style="left:'+nowX+'px"></div>';
     html+='</div></div>';
   });
   html+='</div>';
-  html+='<div class="legend foot pin"><span class="key">Status</span>'+plan.lists.statuses.map(s=>'<span class="k"><i style="--c:'+statusColor(s)+'"></i>'+esc(s)+'</span>').join('')+'</div>';
+  html+='<div class="legend foot pin"><span class="key">Status</span>'+plan.lists.statuses.map(s=>'<span class="k"><i style="--c:'+statusColor(s)+'"></i>'+esc(s)+'</span>').join('')+'<span class="k"><i class="pkey">P</i>Post preview ready</span></div>';
   if(!plan.pillars.length) html='<div class="empty">No pillars yet. Use Pillars to add the first one.</div>';
   else if(!plan.items.length) html+='<div class="empty over">No posts yet. Use Import / Export → Import from Excel to load the calendar, or + Add post.</div>';
   stage.innerHTML=html;
@@ -419,12 +468,12 @@ function renderCalendar(){
     while(d<last){ html+='<div class="cal-week">';
       for(let i=0;i<7;i++){ const day=addDays(d,i); const inM=day>=first&&day<last; const key=iso(day); const posts=items.filter(it=>it.date===key).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
         html+='<div class="cal-cell'+(i>4?' wk':'')+(inM?'':' out')+(key===tKey?' today':'')+'"><div class="cal-day">'+(inM?'<button type="button" class="add" data-add-date="'+key+'" title="Add post on '+esc(fmtDay(key))+'" aria-label="Add post on '+esc(fmtDay(key))+'">+</button>':'')+'<span>'+day.getDate()+'</span></div>';
-        posts.forEach(it=>{ const p=pillarOf(it.pillar)||UNASSIGNED; html+='<button type="button" class="cal-post'+(isLight(p.color)?' light':'')+'" data-open="'+it.id+'" style="--pc:'+p.color+';--sc:'+statusColor(it.status)+'" title="'+esc(p.name)+' · '+esc(it.channel)+' · '+esc(it.status)+(it.time?' · '+esc(it.time):'')+'"><span>'+esc(it.title||'(untitled)')+'</span><i class="st"></i></button>'; });
+        posts.forEach(it=>{ const p=pillarOf(it.pillar)||UNASSIGNED; html+='<div class="cal-row"><button type="button" class="cal-post'+(isLight(p.color)?' light':'')+'" data-open="'+it.id+'" style="--pc:'+p.color+';--sc:'+statusColor(it.status)+'" title="'+esc(p.name)+' · '+esc(it.channel)+' · '+esc(it.status)+(it.time?' · '+esc(it.time):'')+'"><span>'+esc(it.title||'(untitled)')+'</span><i class="st"></i></button>'+(canPreview(it)?'<button type="button" class="pbtn" data-preview="'+it.id+'" title="Post preview" aria-label="Post preview">P</button>':'')+'</div>'; });
         html+='</div>'; }
       html+='</div>'; d=addDays(d,7); }
     html+='</div></section>';
   }
-  html+='<div class="legend foot"><span class="key">Key</span>'+plan.pillars.map(p=>'<span class="k"><i style="--c:'+p.color+'"></i>'+esc(p.name)+'</span>').join('')+'<span class="brk"></span><span class="key">Status</span>'+plan.lists.statuses.map(s=>'<span class="k"><i style="--c:'+statusColor(s)+'"></i>'+esc(s)+'</span>').join('')+'</div>';
+  html+='<div class="legend foot"><span class="key">Key</span>'+plan.pillars.map(p=>'<span class="k"><i style="--c:'+p.color+'"></i>'+esc(p.name)+'</span>').join('')+'<span class="brk"></span><span class="key">Status</span>'+plan.lists.statuses.map(s=>'<span class="k"><i style="--c:'+statusColor(s)+'"></i>'+esc(s)+'</span>').join('')+'<span class="k"><i class="pkey">P</i>Post preview ready</span></div>';
   html+='</div>'; stage.innerHTML=html;
 }
 function renderList(){
@@ -432,7 +481,7 @@ function renderList(){
   const items=plan.items.filter(matchesFilters).sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''));
   let html='<div style="overflow:auto"><table class="list"><thead><tr><th>Publish</th><th>Channel</th><th>Pillar</th><th>Campaign</th><th>Working title</th><th>Format</th><th>Objective</th><th>Owner</th><th>Approver</th><th>Status</th><th class="num">Impr.</th><th class="num">Eng.</th><th class="num">Eng. rate</th><th class="num">Clicks</th><th class="num">Followers</th></tr></thead><tbody>';
   items.forEach(it=>{ const p=pillarOf(it.pillar)||{name:'Unassigned',color:'#8C97B5'};
-    html+='<tr class="row" data-open="'+it.id+'" tabindex="0"><td style="white-space:nowrap">'+esc(fmtDay(it.date))+(it.time?'<br><span class="hint">'+esc(it.time)+'</span>':'')+'</td><td>'+esc(it.channel)+'</td><td><span class="pdot" style="--pc:'+p.color+'"></span>'+esc(p.name)+'</td><td>'+esc(it.campaign)+'</td><td><strong>'+esc(it.title)+'</strong></td><td>'+esc(it.format)+'</td><td>'+esc(it.objective)+'</td><td>'+esc(it.owner)+'</td><td>'+esc(it.approver)+'</td><td><span class="pill" style="--sc:'+statusColor(it.status)+'"><i></i>'+esc(it.status)+'</span></td><td class="num">'+fmtNum(it.impressions)+'</td><td class="num">'+fmtNum(it.engagements)+'</td><td class="num">'+pctText(engRate(it))+'</td><td class="num">'+fmtNum(it.clicks)+'</td><td class="num">'+fmtNum(it.followers)+'</td></tr>';
+    html+='<tr class="row" data-open="'+it.id+'" tabindex="0"><td style="white-space:nowrap">'+esc(fmtDay(it.date))+(it.time?'<br><span class="hint">'+esc(it.time)+'</span>':'')+'</td><td>'+esc(it.channel)+'</td><td><span class="pdot" style="--pc:'+p.color+'"></span>'+esc(p.name)+'</td><td>'+esc(it.campaign)+'</td><td><strong>'+esc(it.title)+'</strong>'+(canPreview(it)?' <button type="button" class="pbtn" data-preview="'+it.id+'" title="Post preview" aria-label="Post preview" style="position:static;display:inline-block;vertical-align:middle;margin-left:6px">P</button>':'')+'</td><td>'+esc(it.format)+'</td><td>'+esc(it.objective)+'</td><td>'+esc(it.owner)+'</td><td>'+esc(it.approver)+'</td><td><span class="pill" style="--sc:'+statusColor(it.status)+'"><i></i>'+esc(it.status)+'</span></td><td class="num">'+fmtNum(it.impressions)+'</td><td class="num">'+fmtNum(it.engagements)+'</td><td class="num">'+pctText(engRate(it))+'</td><td class="num">'+fmtNum(it.clicks)+'</td><td class="num">'+fmtNum(it.followers)+'</td></tr>';
   });
   if(!items.length) html+='<tr><td colspan="15" class="empty">No posts match these filters.</td></tr>';
   html+='</tbody></table></div>';
@@ -453,7 +502,7 @@ function openItem(id, isNew){
   html+='<div class="f"><label for="fld-pillar">Content pillar</label><select id="fld-pillar" name="pillar">'+plan.pillars.map(p=>'<option value="'+p.id+'"'+(p.id===it.pillar?' selected':'')+'>'+esc(p.name)+'</option>').join('')+'</select></div>';
   html+=f('Campaign','campaign',it.campaign)+sel('LinkedIn channel','channel',it.channel,plan.lists.channels)+sel('Format','format',it.format,plan.lists.formats)+sel('Objective','objective',it.objective,plan.lists.objectives)+f('Audience','audience',it.audience)+'</div></fieldset>';
   html+='<fieldset><legend>Schedule and approval</legend><div class="grid3">'+f('Publish date','date',it.date,'date')+f('Publish time','time',it.time)+sel('Status','status',it.status,plan.lists.statuses)+f('Owner','owner',it.owner,'list')+f('Approver','approver',it.approver,'list')+'</div><datalist id="peopleList">'+people.map(o=>'<option value="'+esc(o)+'">').join('')+'</datalist></fieldset>';
-  html+='<fieldset><legend>Copy and assets<span class="spacer"></span><button type="button" class="btn small" id="dCopy">Copy post text</button></legend><div class="grid2"><div class="f full"><label for="fld-copy">Post copy</label><textarea id="fld-copy" name="copy" class="copy">'+esc(it.copy)+'</textarea><div class="cnt" id="copyCount"></div></div>'+f('Destination link','link',it.link)+f('Asset','asset',it.asset)+'</div></fieldset>';
+  html+='<fieldset><legend>Copy and assets<span class="spacer"></span><button type="button" class="btn small primary" id="dPreview">Post preview</button></legend><div class="grid2"><div class="f full"><label for="fld-copy">Post copy</label><textarea id="fld-copy" name="copy" class="copy">'+esc(it.copy)+'</textarea><div class="copyrow"><span class="cnt" id="copyCount"></span><button type="button" class="btn small" id="dCopy">Copy post text</button></div></div>'+f('Destination link','link',it.link)+f('Asset reference or link','asset',it.asset)+'<div class="f full"><label>Asset file</label><div class="assetbox" id="assetBox"></div><input type="file" id="assetInput" accept="image/*,video/*,.pdf" hidden><div class="hint" style="margin-top:4px">Images are stored in the calendar (resized to 1600px). Videos and PDFs are kept by name only, so keep the file in SharePoint and paste its link above.</div></div></div></fieldset>';
   html+='<fieldset><legend>Performance</legend><table class="perf"><thead><tr><th>Metric</th><th style="text-align:right">Actual</th></tr></thead><tbody>';
   METRICS.forEach(([k,label])=>{ html+='<tr><td class="m">'+label+'</td><td><input type="number" min="0" step="1" name="'+k+'" value="'+(it[k]==null?'':it[k])+'" aria-label="'+label+'"></td></tr>'; });
   html+='<tr><td class="m">Engagement rate</td><td class="v" id="erCell"></td></tr></tbody></table><div class="grid2" style="margin-top:8px"><div class="f"><label for="fld-engagementRate">Reported engagement rate (%)</label><input id="fld-engagementRate" name="engagementRate" type="number" step="0.01" min="0" value="'+(it.engagementRate==null?'':(it.engagementRate*100).toFixed(2))+'"></div></div><div class="hint" style="margin-top:6px">Engagement rate is engagements ÷ impressions unless you enter the rate LinkedIn reports.</div></fieldset>';
@@ -462,6 +511,14 @@ function openItem(id, isNew){
   html+='<button type="button" class="btn danger" id="dDelete">Delete</button><button type="button" class="btn" id="dDup">Duplicate</button><div class="spacer"></div><button type="button" class="btn" id="dCancel">Cancel</button><button type="button" class="btn primary" id="dSave">Save</button></footer></aside>';
   host.innerHTML=html;
   const form=$('#dForm');
+  let af = it.assetFile ? Object.assign({}, it.assetFile) : null;
+  const drawAsset=()=>{ const box=$('#assetBox'); if(af){ const img = af.src && (/^data:image/.test(af.src) || /^image\//.test(af.type||'')); const vid = af.src && /^video\//.test(af.type||''); box.innerHTML=(img?'<img src="'+esc(af.src)+'" alt="">':vid?'<video src="'+esc(af.src)+'" controls playsinline style="width:120px;height:80px;border-radius:6px;background:#000;flex:none"></video>':'<div class="fileicon">'+esc((af.type||'file').split('/').pop().toUpperCase().slice(0,6))+'</div>')+'<div class="meta"><b title="'+esc(af.name)+'">'+esc(af.name)+'</b><span class="hint">'+esc(af.type||'')+(af.size?' · '+Math.round(af.size/1024)+' KB':'')+(img?'':' · name only')+'</span><div class="ops"><button type="button" class="btn small" id="afReplace">Replace</button><button type="button" class="btn small danger" id="afRemove">Remove</button></div></div>'; $('#afReplace').onclick=()=>$('#assetInput').click(); $('#afRemove').onclick=()=>{ af=null; drawAsset(); }; }
+    else { box.innerHTML='<div class="fileicon">+</div><div class="meta"><b>No file attached</b><div class="ops"><button type="button" class="btn small" id="afAdd">Upload image, video or PDF</button></div></div>'; $('#afAdd').onclick=()=>$('#assetInput').click(); } };
+  drawAsset();
+  $('#assetInput').onchange=async e=>{ const file=e.target.files[0]; e.target.value=''; if(!file) return;
+    if(assetsCap && /^(image\/(png|jpeg|gif|webp)|video\/(mp4|webm)|application\/pdf)$/.test(file.type)){ toast('Uploading '+file.name+'…', 10000); try{ const r=await assetsCap.upload(file); af={name:file.name, type:file.type, size:r.sizeBytes, src:r.url, assetId:r.id}; drawAsset(); toast('Uploaded '+file.name); }catch(err){ const c=err&&err.code; toast(c==='too_large'?'That file is over 20 MB':c==='unsupported_type'?'That file type isn’t supported':'Upload failed ('+(c||'error')+')', 5000); } return; }
+    try{ af=await readAsset(file); drawAsset(); toast(/^image/.test(file.type)?'Image attached':'File name recorded'); }catch(err){ toast('Couldn’t read that file'); } };
+  $('#dPreview').onclick=()=>{ const fd=new FormData(form); const v={}; ['title','copy','channel','format','date','time','link','status'].forEach(k=>v[k]=(fd.get(k)||'').toString()); v.assetFile=af; v.engagements=fd.get('engagements'); openPreview(v); };
   const derive=()=>{ const g=n=>{ const v=form.elements[n].value; return v===''?null:Number(v); }; const rep=g('engagementRate'); const r = rep!=null? rep/100 : (g('impressions')&&g('engagements')!=null? g('engagements')/g('impressions') : null); $('#erCell').textContent=r==null?'–':pctText(r); const c=form.elements.copy.value.length; $('#copyCount').textContent=c+' characters'+(c>3000?' (LinkedIn limit is 3,000)':''); };
   derive(); form.addEventListener('input', derive);
   form.addEventListener('submit', e=>{ e.preventDefault(); $('#dSave').click(); });
@@ -475,7 +532,7 @@ function openItem(id, isNew){
     ['title','pillar','campaign','channel','format','objective','audience','date','time','status','owner','approver','copy','link','asset'].forEach(k=>it[k]=(fd.get(k)||'').toString().trim());
     if(!it.title){ form.elements.title.focus(); toast('Give the post a working title first'); return; }
     if(!it.date){ form.elements.date.focus(); toast('Publish date is needed'); return; }
-    METRICS.forEach(([k])=>{ const v=fd.get(k); it[k]=v===''?null:Number(v); }); const er=fd.get('engagementRate'); it.engagementRate = er===''?null:Number(er)/100;
+    METRICS.forEach(([k])=>{ const v=fd.get(k); it[k]=v===''?null:Number(v); }); const er=fd.get('engagementRate'); it.engagementRate = er===''?null:Number(er)/100; it.assetFile=af;
     host.innerHTML=''; document.removeEventListener('keydown', onKey); render(); await savePlan(); toast('Saved: '+it.title);
   };
   $('#dDup').onclick=async ()=>{ const copy=JSON.parse(JSON.stringify(it)); copy.id=uid(); copy.title=(it.title||'Untitled')+' (copy)'; METRICS.forEach(([k])=>copy[k]=null); copy.engagementRate=null; copy.status=plan.lists.statuses[0]||'In Draft'; plan.items.push(copy); close(); render(); await savePlan(); openItem(copy.id,false); };
@@ -484,6 +541,39 @@ function openItem(id, isNew){
   setTimeout(()=>{ form.elements.title.focus(); }, 30);
 }
 function addItem(pillarId, date){ const it=blankItem(pillarId||''); const {s,e}=rangeDates(); const t=today(); if(date) it.date=date; else if(!(t>=s&&t<e)) it.date=iso(s); plan.items.push(it); openItem(it.id,true); }
+
+/* ---------- assets and LinkedIn preview ---------- */
+function canPreview(it){ return !!(it && it.copy && it.copy.trim() && it.date && it.channel); }
+function previewFrom(it){ return Object.assign({}, it, {engagements: it.engagements}); }
+function readAsset(file){ return new Promise((resolve,reject)=>{
+  const base={name:file.name, type:file.type||'', size:file.size, src:null};
+  if(!/^image\//.test(file.type)){ resolve(base); return; }
+  const r=new FileReader(); r.onerror=reject; r.onload=()=>{ const img=new Image(); img.onerror=reject; img.onload=()=>{ const max=1600; let w=img.width,h=img.height; const sc=Math.min(1, max/Math.max(w,h)); if(sc===1 && file.size<350*1024){ resolve(Object.assign(base,{src:r.result})); return; } w=Math.round(w*sc); h=Math.round(h*sc); const c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h); const png=/png|gif|webp/.test(file.type) && file.size<900*1024; const out=png? c.toDataURL('image/png') : c.toDataURL('image/jpeg',0.85); resolve(Object.assign(base,{src:out, size:Math.round(out.length*0.75), type:png?'image/png':'image/jpeg'})); }; img.src=r.result; }; r.readAsDataURL(file); }); }
+function linkify(text){ return esc(text).replace(/(https?:\/\/[^\s<]+)/g,'<span class="lk">$1</span>').replace(/(^|\s)(#[\p{L}\p{N}_]+)/gu,'$1<span class="lk">$2</span>').replace(/(^|\s)(@[\p{L}\p{N}_.]+)/gu,'$1<span class="lk">$2</span>'); }
+function openPreview(v){
+  const meta=plan.channelMeta[v.channel]||{}; const name=meta.display||v.channel||'Paragon Brand Services'; const followers=meta.followers||'';
+  const when = v.date ? (v.status==='Published'?'':'Scheduled · ')+fmtDay(v.date)+(v.time?' · '+v.time:'') : 'Draft';
+  const copy=(v.copy||'').trim(); const limit=210; const lines=copy.split('\n'); const needsMore = copy.length>limit || lines.length>3;
+  let short=copy; if(needsMore){ short=lines.slice(0,3).join('\n'); if(short.length>limit){ short=short.slice(0,limit); short=short.slice(0, Math.max(short.lastIndexOf(' '), 150)); } }
+  const af=v.assetFile; let media='';
+  if(af && af.src && (/^data:image/.test(af.src) || /^image\//.test(af.type||''))) media='<div class="li-media"><img src="'+esc(af.src)+'" alt=""></div>';
+  else if(af && af.src && /^video\//.test(af.type||'')) media='<div class="li-media"><video src="'+esc(af.src)+'" controls playsinline style="width:100%;display:block;background:#000;max-height:420px"></video></div>';
+  else if(af) media='<div class="li-media"><div class="ph"><b>'+esc((v.format||'Media'))+'</b><span>'+esc(af.name)+'</span></div></div>';
+  else if(v.format && /image|carousel|video|poll|event/i.test(v.format)) media='<div class="li-media"><div class="ph"><b>'+esc(v.format)+'</b><span>No asset attached yet</span></div></div>';
+  let link=''; if(/^https?:\/\//i.test(v.link||'')){ let dom=''; try{ dom=new URL(v.link).hostname.replace(/^www\./,''); }catch(e){} link='<div class="li-link"><div><b>'+esc(v.title||dom)+'</b><span class="dom">'+esc(dom)+'</span></div></div>'; }
+  const eng = v.engagements && Number(v.engagements)>0 ? Number(v.engagements).toLocaleString('en-GB') : '';
+  const host=document.createElement('div'); host.id='previewHost';
+  host.innerHTML='<div class="li-scrim" id="liScrim"></div><div class="li-wrap" id="liWrap"><div class="li-col"><div class="li-bar"><span>Post preview · how it will look in the LinkedIn feed</span><button type="button" class="btn small" id="liClose">Close</button></div>'+
+    '<article class="li-card"><div class="li-head"><div class="li-avatar"><img src="'+LOGO+'" alt=""></div><div class="li-who"><div class="li-name">'+esc(name)+'</div><div class="li-sub">'+esc(followers)+'</div><div class="li-sub">'+esc(when)+' <span class="g" title="Anyone"></span></div></div><div class="li-more">···</div></div>'+
+    '<div class="li-body" id="liBody">'+linkify(short)+(needsMore?' <button type="button" class="morebtn" id="liMore">…more</button>':'')+'</div>'+media+link+
+    '<div class="li-social"><span class="li-react"><i style="background:#378fe9"></i><i style="background:#df704d"></i><i style="background:#6dae4f"></i>&nbsp;&nbsp;'+(eng||'')+'</span><span>'+(eng?'':'0 comments · 0 reposts')+'</span></div>'+
+    '<div class="li-actions"><span><svg viewBox="0 0 24 24"><path d="M3 10h3v10H3zM8 10l3-7c1.2 0 2 .9 2 2v4h5.5a2 2 0 0 1 2 2.4l-1.3 6.2A2 2 0 0 1 17.2 20H8z"/></svg>Like</span><span><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Comment</span><span><svg viewBox="0 0 24 24"><path d="M6 8h11l-2.5-2.5M17 8l-2.5 2.5M18 16H7l2.5-2.5M7 16l2.5 2.5"/></svg>Repost</span><span><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg>Send</span></div></article>'+
+    '<div class="li-bar"><span>'+copy.length+' characters'+(copy.length>3000?' · over the 3,000 limit':'')+'</span></div></div></div>';
+  document.body.appendChild(host);
+  const close=()=>{ host.remove(); document.removeEventListener('keydown', onKey); }; const onKey=e=>{ if(e.key==='Escape') close(); }; document.addEventListener('keydown', onKey);
+  $('#liClose').onclick=close; $('#liScrim').onclick=close; $('#liWrap').addEventListener('click', e=>{ if(e.target===e.currentTarget) close(); });
+  const more=$('#liMore'); if(more) more.onclick=()=>{ $('#liBody').innerHTML=linkify(copy); };
+}
 
 /* ---------- pillars drawer ---------- */
 function openPillars(){
@@ -525,7 +615,7 @@ async function exportXlsx(){
   const X=await ensureLib('XLSX','https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'); if(!X){ toast('Excel library did not load'); return; }
   const wb=X.utils.book_new();
   const aoa=[[plan.title||'LinkedIn Content Calendar'], COLS.map(c=>c[1])];
-  sortedItems().forEach(it=>{ const p=pillarOf(it.pillar); aoa.push(COLS.map(([k])=>{ if(k==='pillar') return p?p.name:''; if(k==='date'){ const d=pd(it.date); return d||''; } if(k==='engagementRate'){ const r=engRate(it); return r==null?'':r; } const v=it[k]; return v==null?'':v; })); });
+  sortedItems().forEach(it=>{ const p=pillarOf(it.pillar); aoa.push(COLS.map(([k])=>{ if(k==='pillar') return p?p.name:''; if(k==='date'){ const d=pd(it.date); return d||''; } if(k==='engagementRate'){ const r=engRate(it); return r==null?'':r; } if(k==='asset') return it.asset||(it.assetFile?it.assetFile.name:''); const v=it[k]; return v==null?'':v; })); });
   const ws=X.utils.aoa_to_sheet(aoa,{cellDates:true}); ws['!cols']=[{wch:12},{wch:11},{wch:16},{wch:22},{wch:18},{wch:12},{wch:14},{wch:14},{wch:34},{wch:60},{wch:28},{wch:24},{wch:10},{wch:14},{wch:14},{wch:11},{wch:11},{wch:11},{wch:9},{wch:10}];
   const rng=X.utils.decode_range(ws['!ref']); for(let R=2;R<=rng.e.r;R++){ const dc=ws[X.utils.encode_cell({r:R,c:0})]; if(dc&&dc.t==='d') dc.z='dd/mm/yyyy'; const ec=ws[X.utils.encode_cell({r:R,c:17})]; if(ec&&typeof ec.v==='number') ec.z='0.00%'; }
   X.utils.book_append_sheet(wb, ws, 'Content calendar');
@@ -668,7 +758,7 @@ function wire(){
   document.addEventListener('click', e=>{ if(!e.target.closest('.menu')){ menu.hidden=true; btn.setAttribute('aria-expanded','false'); } });
   menu.querySelectorAll('button').forEach(b=>b.onclick=async ()=>{ menu.hidden=true; const k=b.dataset.export; if(k==='import'){ $('#fileImport').click(); return; } toast(k==='pptx'?'Building the PowerPoint…':k==='xlsx'?'Building the workbook…':'Preparing file…', 1800); try{ if(k==='xlsx') await exportXlsx(); else if(k==='pptx') await exportPptx(); else await exportJson(); }catch(e){ console.error(e); toast('Export failed: '+(e&&e.message||e)); } });
   $('#fileImport').onchange=e=>{ const f=e.target.files[0]; if(f) importFile(f); e.target.value=''; };
-  $('#stage').addEventListener('click', e=>{ const o=e.target.closest('[data-open]'); if(o){ openItem(o.dataset.open,false); return; } const a=e.target.closest('[data-add]'); if(a){ addItem(a.dataset.add); return; } const ad=e.target.closest('[data-add-date]'); if(ad) addItem('', ad.dataset.addDate); });
+  $('#stage').addEventListener('click', e=>{ const pv=e.target.closest('[data-preview]'); if(pv){ const it=plan.items.find(i=>i.id===pv.dataset.preview); if(it) openPreview(previewFrom(it)); return; } const o=e.target.closest('[data-open]'); if(o){ openItem(o.dataset.open,false); return; } const a=e.target.closest('[data-add]'); if(a){ addItem(a.dataset.add); return; } const ad=e.target.closest('[data-add-date]'); if(ad) addItem('', ad.dataset.addDate); });
   $('#stage').addEventListener('keydown', e=>{ if(e.key==='Enter'){ const o=e.target.closest('[data-open]'); if(o) openItem(o.dataset.open,false); } });
   let rt; window.addEventListener('resize', ()=>{ clearTimeout(rt); rt=setTimeout(()=>{ if(view.mode==='weekly') renderTimeline(); }, 120); });
 }
@@ -677,8 +767,8 @@ function wire(){
   await loadPlan(); wire(); render();
   setChip('', 'Saved on this device');
   if(window.claude && typeof window.claude.use==='function'){
-    const [a,d]=await Promise.all([window.claude.use('artifact').catch(()=>null), window.claude.use('downloads').catch(()=>null)]);
-    artifactCap=a; downloadsCap=d; capsReady=true;
+    const [a,d,as]=await Promise.all([window.claude.use('artifact').catch(()=>null), window.claude.use('downloads').catch(()=>null), window.claude.use('assets').catch(()=>null)]);
+    artifactCap=a; downloadsCap=d; assetsCap=as; capsReady=true;
     setChip('', a?'Saves to the shared calendar':'Saved on this device');
   } else { capsReady=true; }
 })();
