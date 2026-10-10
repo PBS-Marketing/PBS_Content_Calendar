@@ -1,16 +1,10 @@
 {
  "version": 2,
- "savedAt": "2026-10-09T22:25:00.000Z",
+ "savedAt": "2026-10-10T15:40:00.000Z",
  "title": "LinkedIn Content Calendar",
  "lists": {
   "channels": [
-   "Brand Services",
-   "Twelve",
-   "France & Romania",
-   "Service Graphics",
-   "Image Factory",
-   "Vox",
-   "Octink"
+   "Brand Services"
   ],
   "formats": [
    "Text",
