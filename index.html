@@ -389,7 +389,7 @@ async function loadPlan(){
   // The shared file is the source of truth. A browser copy is used only when it was made from this exact version of the file
   // (so unsaved edits on a static host survive a reload) and never when the file has moved on.
   const local=readLocal(); let fileStamp=base.savedAt||'';
-  if(local && local.basedOn && local.basedOn===fileStamp && local.savedAt>fileStamp){
+  if(local && local.basedOn && local.basedOn===fileStamp && Array.isArray(local.items)){
     // Keep the browser copy, but never lose an asset link the shared file holds for the same post.
     const fileItems=new Map((base.items||[]).map(it=>[it.id,it]));
     (local.items||[]).forEach(it=>{ const f=fileItems.get(it.id); if(f && f.assetFile && f.assetFile.src && !(it.assetFile && it.assetFile.src)) it.assetFile=Object.assign({}, f.assetFile); });
