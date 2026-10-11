@@ -1,6 +1,6 @@
 {
  "version": 2,
- "savedAt": "2026-10-11T14:26:00.000Z",
+ "savedAt": "2026-10-11T14:50:00.000Z",
  "title": "LinkedIn Content Calendar",
  "lists": {
   "channels": [
@@ -148,7 +148,8 @@
    "engagements": null,
    "engagementRate": null,
    "clicks": null,
-   "followers": null
+   "followers": null,
+   "approverComments": ""
   },
   {
    "id": "p202610131",
@@ -171,7 +172,8 @@
    "engagements": null,
    "engagementRate": null,
    "clicks": null,
-   "followers": null
+   "followers": null,
+   "approverComments": ""
   },
   {
    "id": "p202610142",
@@ -194,7 +196,8 @@
    "engagements": null,
    "engagementRate": null,
    "clicks": null,
-   "followers": null
+   "followers": null,
+   "approverComments": ""
   },
   {
    "id": "p202610153",
@@ -217,7 +220,8 @@
    "engagements": null,
    "engagementRate": null,
    "clicks": null,
-   "followers": null
+   "followers": null,
+   "approverComments": ""
   },
   {
    "id": "p202610164",
@@ -240,7 +244,8 @@
    "engagements": null,
    "engagementRate": null,
    "clicks": null,
-   "followers": null
+   "followers": null,
+   "approverComments": ""
   },
   {
    "id": "p10qq2",
@@ -269,7 +274,8 @@
     "type": "application/pdf",
     "size": 166280,
     "src": "assets/PBS_10Q_Q2_LinkedIn_carousel.pdf"
-   }
+   },
+   "approverComments": ""
   },
   {
    "id": "prebrand2",
@@ -298,7 +304,8 @@
     "type": "application/pdf",
     "size": 121458,
     "src": "assets/PBS_Post2_Audit_Trap_Carousel.pdf"
-   }
+   },
+   "approverComments": ""
   },
   {
    "id": "p10qq3",
@@ -327,7 +334,8 @@
     "type": "application/pdf",
     "size": 167362,
     "src": "assets/PBS_10Q_Q3_LinkedIn_carousel.pdf"
-   }
+   },
+   "approverComments": ""
   },
   {
    "id": "p10qq4",
@@ -356,7 +364,8 @@
     "type": "application/pdf",
     "size": 167334,
     "src": "assets/PBS_10Q_Q4_LinkedIn_carousel.pdf"
-   }
+   },
+   "approverComments": ""
   },
   {
    "id": "prebrand3",
@@ -385,7 +394,8 @@
     "type": "application/pdf",
     "size": 121326,
     "src": "assets/PBS_Post3_Making_Good_Trap_Carousel.pdf"
-   }
+   },
+   "approverComments": ""
   },
   {
    "id": "p10qq5",
@@ -414,7 +424,8 @@
     "type": "application/pdf",
     "size": 165598,
     "src": "assets/PBS_10Q_Q5_LinkedIn_carousel.pdf"
-   }
+   },
+   "approverComments": ""
   },
   {
    "id": "p10qq6",
@@ -437,7 +448,8 @@
    "engagements": null,
    "engagementRate": null,
    "clicks": null,
-   "followers": null
+   "followers": null,
+   "approverComments": ""
   },
   {
    "id": "prebrand4",
@@ -466,7 +478,8 @@
     "type": "application/pdf",
     "size": 122161,
     "src": "assets/PBS_Post4_Local_Nuance_Trap_Carousel.pdf"
-   }
+   },
+   "approverComments": ""
   },
   {
    "id": "p10qq7",
@@ -489,7 +502,8 @@
    "engagements": null,
    "engagementRate": null,
    "clicks": null,
-   "followers": null
+   "followers": null,
+   "approverComments": ""
   },
   {
    "id": "p10qq8",
@@ -512,7 +526,8 @@
    "engagements": null,
    "engagementRate": null,
    "clicks": null,
-   "followers": null
+   "followers": null,
+   "approverComments": ""
   },
   {
    "id": "prebrand5",
@@ -541,7 +556,8 @@
     "type": "application/pdf",
     "size": 121631,
     "src": "assets/PBS_Post5_Incomplete_Toolkit_Trap_Carousel.pdf"
-   }
+   },
+   "approverComments": ""
   },
   {
    "id": "p10qq9",
@@ -564,7 +580,8 @@
    "engagements": null,
    "engagementRate": null,
    "clicks": null,
-   "followers": null
+   "followers": null,
+   "approverComments": ""
   },
   {
    "id": "p10qq10",
@@ -587,7 +604,8 @@
    "engagements": null,
    "engagementRate": null,
    "clicks": null,
-   "followers": null
+   "followers": null,
+   "approverComments": ""
   },
   {
    "id": "prebrand6",
@@ -616,7 +634,8 @@
     "type": "application/pdf",
     "size": 124360,
     "src": "assets/PBS_Post6_Accelleron_Carousel.pdf"
-   }
+   },
+   "approverComments": ""
   }
  ]
 }
