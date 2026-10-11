@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LinkedIn Content Calendar</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap">
 <style>
@@ -86,6 +90,8 @@ button{cursor:pointer}
 .menu .pop{position:absolute;left:0;top:calc(100% + 6px);}
 .menu .pop.flip{left:auto;right:0}
 .menu .pop{background:var(--bg);border:1px solid var(--line-strong);border-radius:10px;box-shadow:var(--shadow);min-width:250px;padding:6px;z-index:30;display:flex;flex-direction:column}
+.menu .pop[hidden]{display:none}
+[hidden]{display:none!important}
 .menu .pop button{border:0;background:transparent;text-align:left;padding:8px 10px;border-radius:7px;font-weight:500;color:var(--ink)}
 .menu .pop button:hover{background:var(--surface-2)}
 .menu .pop small{display:block;color:var(--muted);font-weight:400}
@@ -385,7 +391,12 @@ async function loadPlan(){
   // The shared file is the source of truth. A browser copy is used only when it was made from this exact version of the file
   // (so unsaved edits on a static host survive a reload) and never when the file has moved on.
   const local=readLocal(); let fileStamp=base.savedAt||'';
-  if(local && local.basedOn && local.basedOn===fileStamp && local.savedAt>fileStamp) base=local;
+  if(local && local.basedOn && local.basedOn===fileStamp && local.savedAt>fileStamp){
+    // Keep the browser copy, but never lose an asset link the shared file holds for the same post.
+    const fileItems=new Map((base.items||[]).map(it=>[it.id,it]));
+    (local.items||[]).forEach(it=>{ const f=fileItems.get(it.id); if(f && f.assetFile && f.assetFile.src && !(it.assetFile && it.assetFile.src)) it.assetFile=Object.assign({}, f.assetFile); });
+    base=local;
+  }
   plan=normalise(base); plan.basedOn=fileStamp;
   try{ const v=JSON.parse(localStorage.getItem(LS_VIEW)||'null'); if(v) Object.assign(view, v, {q:''}); }catch(e){}
   if(!view.wstart) view.wstart=iso(mondayOnOrBefore(today()));
@@ -517,7 +528,7 @@ function render(){ renderChrome(); if(view.mode==='list') renderList(); else if(
 
 
 /* ---------- UTM links (same parameters as Google's campaign URL builder) ---------- */
-function slug(s){ return String(s||'').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); }
+function slug(s){ return String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); }
 function utmDefaults(v){ return {source:'linkedin', medium:v.organicPaid==='Paid'?'paid_social':'social', campaign:slug(v.campaign||v.title), content:slug(v.title), term:''}; }
 function utmLink(v){ const base=(v.link||'').trim(); if(!/^https?:\/\//i.test(base)) return ''; const d=utmDefaults(v); const u=v.utm||{}; const vals={utm_source:u.source||d.source, utm_medium:u.medium||d.medium, utm_campaign:u.campaign||d.campaign, utm_content:u.content||d.content, utm_term:u.term||d.term};
   try{ const url=new URL(base); for(const k in vals){ if(vals[k]) url.searchParams.set(k, vals[k]); } return url.toString(); }catch(e){ return ''; } }
