@@ -462,9 +462,27 @@ async function savePlan(){
   setChip(saveMode==='readonly'?'warn':'', saveMode==='readonly'?'Read-only view: changes stay on this device':'Saved on this device');
   return true;
 }
-function askAdminKey(retry){ return new Promise(resolve=>{ let host=$('#chooserHost'); if(!host){ host=document.createElement('div'); host.id='chooserHost'; document.body.appendChild(host); }
-  host.innerHTML='<div class="pv-scrim" id="akScrim"></div><div class="pv-wrap" role="dialog" aria-modal="true" aria-labelledby="akTitle" style="width:min(400px,calc(100% - 24px))"><div class="pv-bar"><span id="akTitle">Admin password</span><button type="button" class="x" id="akClose" aria-label="Close">×</button></div><form class="pv-body" id="akForm" style="background:var(--bg)"><p class="hint" style="margin:0 0 10px">'+(retry?'That password wasn’t accepted. Try again.':'Enter the admin password to save changes to the shared calendar. It’s remembered on this device.')+'</p><div class="f"><label for="akInput">Password</label><input id="akInput" type="password" autocomplete="current-password"></div></form><div class="pv-foot"><div class="spacer"></div><button type="button" class="btn" id="akCancel">Keep on this device only</button><button type="submit" form="akForm" class="btn primary">Save to shared calendar</button></div></div>';
-  const done=v=>{ host.innerHTML=''; resolve(v); }; $('#akScrim').onclick=()=>done(''); $('#akClose').onclick=()=>done(''); $('#akCancel').onclick=()=>done(''); $('#akForm').onsubmit=e=>{ e.preventDefault(); done($('#akInput').value.trim()); }; setTimeout(()=>$('#akInput').focus(), 30); }); }
+function askAdminKey(retry){ return adminSignIn(retry ? 'That password wasn’t accepted. Try again.' : ''); }
+// Admin sign in, as on the Brand, Marketing, CRM and Sales Enablement Plan: the password is checked with the save service before editing starts.
+function adminSignIn(message){ return new Promise(resolve=>{ const host=$('#drawerHost');
+  host.innerHTML='<div class="scrim" id="asScrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="asTitle" style="width:min(640px,100%)"><header><h2 id="asTitle">Admin sign in</h2><button type="button" class="x" id="asClose" aria-label="Close">×</button></header><form class="body" id="asForm" autocomplete="off"><p style="margin:0 0 14px;color:var(--muted)">Enter the admin password to edit and export the calendar.</p><div class="f"><label for="asInput">Password</label><input id="asInput" type="password" autocomplete="current-password"></div><div class="hint" id="asMsg" style="margin-top:8px;color:var(--bad);min-height:1.2em">'+esc(message||'')+'</div></form><footer><div class="spacer"></div><button type="button" class="btn" id="asCancel">Cancel</button><button type="submit" form="asForm" class="btn primary" id="asGo">Sign in</button></footer></aside>';
+  const done=v=>{ host.innerHTML=''; resolve(v); };
+  $('#asScrim').onclick=()=>done(''); $('#asClose').onclick=()=>done(''); $('#asCancel').onclick=()=>done('');
+  $('#asForm').onsubmit=async e=>{ e.preventDefault(); const pw=$('#asInput').value.trim(); if(!pw) return; $('#asGo').disabled=true; $('#asMsg').textContent='';
+    let r=null; try{ r=await fetch(SITE_API, {method:'POST', headers:{'x-admin-password':pw}}); }catch(err){}
+    if(r && r.ok){ try{ localStorage.setItem(LS_KEY, pw); }catch(err){} done(pw); return; }
+    let msg='Couldn’t reach the save service. Try again.'; if(r){ let code=''; try{ code=(await r.json()).error||''; }catch(err){} msg = code==='wrong_password' ? 'That password wasn’t accepted. Try again.' : code==='not_configured' ? 'ADMIN_PASSWORD isn’t set in Netlify yet.' : 'Sign in failed ('+(code||r.status)+').'; }
+    $('#asMsg').textContent=msg; $('#asGo').disabled=false; $('#asInput').select(); };
+  setTimeout(()=>$('#asInput').focus(), 30); }); }
+async function adminGate(){
+  // On the hosted site, #admin asks for the password before editing starts. The artifact and a local file don't need this.
+  if(PUBLIC || !siteApi) return true;
+  let pw=''; try{ pw=localStorage.getItem(LS_KEY)||''; }catch(e){}
+  if(pw){ try{ const r=await fetch(SITE_API, {method:'POST', headers:{'x-admin-password':pw}}); if(r.ok) return true; if(r.status===401){ try{ localStorage.removeItem(LS_KEY); }catch(e){} } else return true; }catch(e){ return true; } }
+  const got=await adminSignIn('');
+  if(got) return true;
+  location.hash=''; location.reload(); return false;
+}
 function saveView(){ try{ localStorage.setItem(LS_VIEW, JSON.stringify({mode:view.mode,start:view.start,len:view.len,wstart:view.wstart,weeks:view.weeks,channel:view.channel,status:view.status,owner:view.owner})); }catch(e){} }
 
 /* ---------- range and filters ---------- */
@@ -949,6 +967,7 @@ function wire(){
 
 (async function boot(){
   await loadPlan(); wire(); render();
+  if(!(await adminGate())) return;
   if(pendingSave()) setChip('warn','Changes on this device are not in the shared calendar yet', 'Save now'); else setChip('', siteApi?'Saves to the shared calendar':'Saved on this device');
   if(window.claude && typeof window.claude.use==='function'){
     const [a,d,as]=await Promise.all([window.claude.use('artifact').catch(()=>null), window.claude.use('downloads').catch(()=>null), window.claude.use('assets').catch(()=>null)]);
