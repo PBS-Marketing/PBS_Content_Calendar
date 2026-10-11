@@ -306,8 +306,6 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
       <div class="pop" id="exportMenu" hidden>
         <button type="button" data-export="xlsx">Excel workbook<small>Same columns as the source calendar, plus overview and lists</small></button>
         <button type="button" data-export="pptx">PowerPoint deck<small>Timeline slides plus one slide per pillar</small></button>
-        <button type="button" data-export="json">Plan data (JSON)<small>Back up or move the calendar</small></button>
-        <button type="button" data-export="reload">Reload shared data<small>Discard this browser’s copy and load the shared file</small></button>
       </div>
     </div>
     <button type="button" class="btn primary" id="btnAdd">+ Add post</button>
@@ -396,6 +394,14 @@ async function loadPlan(){
     const fileItems=new Map((base.items||[]).map(it=>[it.id,it]));
     (local.items||[]).forEach(it=>{ const f=fileItems.get(it.id); if(f && f.assetFile && f.assetFile.src && !(it.assetFile && it.assetFile.src)) it.assetFile=Object.assign({}, f.assetFile); });
     base=local;
+  } else if(local && local.basedOn && local.basedOn!==fileStamp && Array.isArray(local.items)){
+    // The shared file has moved on since this browser's copy was made. Take the file, then keep any post edited
+    // here after the file was built, and any post added here that the file does not have.
+    const localItems=new Map(local.items.map(it=>[it.id,it]));
+    const kept=[]; const merged=(base.items||[]).map(f=>{ const l=localItems.get(f.id); if(l && l.updatedAt && l.updatedAt>fileStamp){ kept.push(f.id); const o=Object.assign({}, l); if(!(o.assetFile && o.assetFile.src) && f.assetFile && f.assetFile.src) o.assetFile=Object.assign({}, f.assetFile); return o; } return f; });
+    const fileIds=new Set((base.items||[]).map(it=>it.id));
+    local.items.forEach(l=>{ if(!fileIds.has(l.id) && l.updatedAt){ merged.push(l); kept.push(l.id); } });
+    base=Object.assign({}, base, {items:merged}); if(kept.length) setTimeout(()=>toast(kept.length+' post'+(kept.length===1?'':'s')+' edited on this device kept alongside the shared file', 4000), 600);
   }
   plan=normalise(base); plan.basedOn=fileStamp;
   try{ const v=JSON.parse(localStorage.getItem(LS_VIEW)||'null'); if(v) Object.assign(view, v, {q:''}); }catch(e){}
@@ -577,10 +583,10 @@ function openItem(id, isNew){
     ['title','pillar','campaign','channel','format','objective','audience','date','time','status','owner','approver','approverComments','copy','link','organicPaid'].forEach(k=>it[k]=(fd.get(k)||'').toString().trim()); if(it.organicPaid!=='Paid') it.organicPaid='Organic'; it.utm={source:(fd.get('utm_source')||'').toString().trim(), medium:(fd.get('utm_medium')||'').toString().trim(), campaign:(fd.get('utm_campaign')||'').toString().trim(), content:(fd.get('utm_content')||'').toString().trim(), term:(fd.get('utm_term')||'').toString().trim()};
     if(!it.title){ form.elements.title.focus(); toast('Give the post a working title first'); return; }
     if(!it.date){ form.elements.date.focus(); toast('Publish date is needed'); return; }
-    METRICS.forEach(([k])=>{ const v=fd.get(k); it[k]=v===''?null:Number(v); }); const er=fd.get('engagementRate'); it.engagementRate = er===''?null:Number(er)/100; it.assetFile=af;
+    METRICS.forEach(([k])=>{ const v=fd.get(k); it[k]=v===''?null:Number(v); }); const er=fd.get('engagementRate'); it.engagementRate = er===''?null:Number(er)/100; it.assetFile=af; it.updatedAt=new Date().toISOString();
     host.innerHTML=''; document.removeEventListener('keydown', onKey); render(); await savePlan(); toast('Saved: '+it.title);
   };
-  $('#dDup').onclick=async ()=>{ const copy=JSON.parse(JSON.stringify(it)); copy.id=uid(); copy.title=(it.title||'Untitled')+' (copy)'; METRICS.forEach(([k])=>copy[k]=null); copy.engagementRate=null; copy.status=plan.lists.statuses[0]||'In Draft'; plan.items.push(copy); close(); render(); await savePlan(); openItem(copy.id,false); };
+  $('#dDup').onclick=async ()=>{ const copy=JSON.parse(JSON.stringify(it)); copy.id=uid(); copy.title=(it.title||'Untitled')+' (copy)'; METRICS.forEach(([k])=>copy[k]=null); copy.engagementRate=null; copy.status=plan.lists.statuses[0]||'In Draft'; copy.updatedAt=new Date().toISOString(); plan.items.push(copy); close(); render(); await savePlan(); openItem(copy.id,false); };
   $('#dDelete').onclick=()=>{ const foot=host.querySelector('footer'); foot.innerHTML='<div class="confirm"><span>Delete “'+esc(it.title||'this post')+'”? This can’t be undone.</span><div class="spacer"></div><button type="button" class="btn" id="dNo">Keep</button><button type="button" class="btn danger" id="dYes">Delete</button></div>';
     $('#dNo').onclick=()=>{ document.removeEventListener('keydown', onKey); openItem(id,isNew); }; $('#dYes').onclick=async ()=>{ plan.items=plan.items.filter(i=>i.id!==it.id); host.innerHTML=''; document.removeEventListener('keydown', onKey); render(); await savePlan(); toast('Deleted'); }; };
   setTimeout(()=>{ form.elements.title.focus(); }, 30);
