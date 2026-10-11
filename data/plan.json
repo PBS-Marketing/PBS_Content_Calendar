@@ -1,6 +1,6 @@
 {
  "version": 2,
- "savedAt": "2026-10-11T14:50:00.000Z",
+ "savedAt": "2026-10-11T14:57:00.000Z",
  "title": "LinkedIn Content Calendar",
  "lists": {
   "channels": [
@@ -149,7 +149,8 @@
    "engagementRate": null,
    "clicks": null,
    "followers": null,
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p202610131",
@@ -173,7 +174,8 @@
    "engagementRate": null,
    "clicks": null,
    "followers": null,
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p202610142",
@@ -197,7 +199,8 @@
    "engagementRate": null,
    "clicks": null,
    "followers": null,
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p202610153",
@@ -221,7 +224,8 @@
    "engagementRate": null,
    "clicks": null,
    "followers": null,
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p202610164",
@@ -245,7 +249,8 @@
    "engagementRate": null,
    "clicks": null,
    "followers": null,
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p10qq2",
@@ -275,7 +280,8 @@
     "size": 166280,
     "src": "assets/PBS_10Q_Q2_LinkedIn_carousel.pdf"
    },
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "prebrand2",
@@ -305,7 +311,8 @@
     "size": 121458,
     "src": "assets/PBS_Post2_Audit_Trap_Carousel.pdf"
    },
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p10qq3",
@@ -335,7 +342,8 @@
     "size": 167362,
     "src": "assets/PBS_10Q_Q3_LinkedIn_carousel.pdf"
    },
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p10qq4",
@@ -365,7 +373,8 @@
     "size": 167334,
     "src": "assets/PBS_10Q_Q4_LinkedIn_carousel.pdf"
    },
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "prebrand3",
@@ -395,7 +404,8 @@
     "size": 121326,
     "src": "assets/PBS_Post3_Making_Good_Trap_Carousel.pdf"
    },
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p10qq5",
@@ -425,7 +435,8 @@
     "size": 165598,
     "src": "assets/PBS_10Q_Q5_LinkedIn_carousel.pdf"
    },
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p10qq6",
@@ -449,7 +460,8 @@
    "engagementRate": null,
    "clicks": null,
    "followers": null,
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "prebrand4",
@@ -479,7 +491,8 @@
     "size": 122161,
     "src": "assets/PBS_Post4_Local_Nuance_Trap_Carousel.pdf"
    },
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p10qq7",
@@ -503,7 +516,8 @@
    "engagementRate": null,
    "clicks": null,
    "followers": null,
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p10qq8",
@@ -527,7 +541,8 @@
    "engagementRate": null,
    "clicks": null,
    "followers": null,
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "prebrand5",
@@ -557,7 +572,8 @@
     "size": 121631,
     "src": "assets/PBS_Post5_Incomplete_Toolkit_Trap_Carousel.pdf"
    },
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p10qq9",
@@ -581,7 +597,8 @@
    "engagementRate": null,
    "clicks": null,
    "followers": null,
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "p10qq10",
@@ -605,7 +622,8 @@
    "engagementRate": null,
    "clicks": null,
    "followers": null,
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   },
   {
    "id": "prebrand6",
@@ -635,7 +653,8 @@
     "size": 124360,
     "src": "assets/PBS_Post6_Accelleron_Carousel.pdf"
    },
-   "approverComments": ""
+   "approverComments": "",
+   "organicPaid": "Organic"
   }
  ]
 }
