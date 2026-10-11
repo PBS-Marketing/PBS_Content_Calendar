@@ -1,6 +1,6 @@
 {
  "version": 2,
- "savedAt": "2026-10-10T15:45:00.000Z",
+ "savedAt": "2026-10-11T14:16:00.000Z",
  "title": "LinkedIn Content Calendar",
  "lists": {
   "channels": [
@@ -26,6 +26,7 @@
    "Recognition"
   ],
   "statuses": [
+   "Planned",
    "In Draft",
    "Under Review",
    "Approved",
