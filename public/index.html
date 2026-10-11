@@ -166,12 +166,19 @@ legend .spacer{flex:1}
 .utmgrid .hint{grid-column:1/-1;margin:0}
 form.ro select,form.ro .toggle,form.ro input[type=date]{pointer-events:none}
 body.public .add{display:none!important}
-form.ro select{appearance:none;-webkit-appearance:none;background-image:none;padding-right:9px}
+form.ro select{background-image:none;padding-right:10px}
 form.ro .assetbox .ops,form.ro .assetbox+input+.hint{display:none}
 form.ro input[readonly],form.ro textarea[readonly],form.ro select{background:var(--surface)}
 @media(max-width:700px){.utmgrid{grid-template-columns:1fr 1fr}}
 .f label{font-size:11px;color:var(--muted);font-weight:600}
-.f input,.f select,.f textarea{padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--bg);color:var(--ink);width:100%;min-width:0}
+.f input,.f select,.f textarea{padding:0 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--bg);color:var(--ink);width:100%;min-width:0;box-sizing:border-box;font-size:13px;line-height:1.3}
+.f input,.f select{height:36px;-webkit-appearance:none;appearance:none}
+.f select{padding-right:30px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2.5 4.5l3.5 3.5 3.5-3.5' fill='none' stroke='%2356618A' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 10px center}
+.f input[type=date]{min-width:0}
+.f input[type=date]::-webkit-date-and-time-value{text-align:left}
+.f .toggle{height:36px;box-sizing:border-box;width:auto}
+.f textarea{padding:8px 10px}
+.f input:focus,.f select:focus,.f textarea:focus{outline:2px solid var(--accent,#005FFF);outline-offset:-1px;border-color:transparent}
 .f textarea{min-height:64px;resize:vertical}
 .f textarea.copy{min-height:170px;font-family:var(--font-body);line-height:1.5}
 .f .cnt{font-size:11px;color:var(--muted);text-align:right}
@@ -190,8 +197,8 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
 .cal-row{position:relative;min-width:0}
 .cal-row .cal-post.haspv{padding-right:30px}
 .cal-row .pbtn{right:3px;top:50%;transform:translateY(-50%)}
-.toggle{display:inline-flex;border:1px solid var(--line-strong);border-radius:8px;overflow:hidden;background:var(--bg)}
-.toggle label{padding:7px 14px;font-weight:600;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center}
+.toggle{display:inline-flex;align-self:flex-start;border:1px solid var(--line-strong);border-radius:8px;overflow:hidden;background:var(--bg)}
+.toggle label{padding:0 16px;font-weight:600;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center}
 .toggle label:has(input:checked){background:var(--fg);color:var(--bg)}
 .toggle input{position:absolute;opacity:0;width:0;height:0}
 .copyrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
@@ -612,7 +619,7 @@ function openItem(id, isNew){
   let html='<div class="scrim" id="scrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle"><header><h2 id="dTitle">'+(isNew?'New post':esc(it.title||'(untitled)'))+'</h2><button type="button" class="x" id="dClose" aria-label="Close">×</button></header><form class="body" id="dForm" autocomplete="off">';
   html+='<fieldset><legend>Post</legend><div class="grid2">'+f('Topic / working title','title',it.title,'full');
   html+='<div class="f"><label for="fld-pillar">Content pillar</label><select id="fld-pillar" name="pillar">'+plan.pillars.map(p=>'<option value="'+p.id+'"'+(p.id===it.pillar?' selected':'')+'>'+esc(p.name)+'</option>').join('')+'</select></div>';
-  html+=f('Campaign','campaign',it.campaign)+sel('LinkedIn channel','channel',it.channel,plan.lists.channels)+sel('Format','format',it.format,plan.lists.formats)+sel('Objective','objective',it.objective,plan.lists.objectives)+f('Audience','audience',it.audience)+'<div class="f"><label>Organic or paid</label><div class="toggle" role="radiogroup" aria-label="Organic or paid"><label><input type="radio" name="organicPaid" value="Organic"'+((it.organicPaid||'Organic')==='Organic'?' checked':'')+'>Organic</label><label><input type="radio" name="organicPaid" value="Paid"'+(it.organicPaid==='Paid'?' checked':'')+'>Paid</label></div></div></div></fieldset>';
+  html+=f('Campaign','campaign',it.campaign)+sel('LinkedIn channel','channel',it.channel,plan.lists.channels)+sel('Format','format',it.format,plan.lists.formats)+sel('Objective','objective',it.objective,plan.lists.objectives)+f('Audience','audience',it.audience)+'<div class="f"><label>Organic / Paid</label><div class="toggle" role="radiogroup" aria-label="Organic or paid"><label><input type="radio" name="organicPaid" value="Organic"'+((it.organicPaid||'Organic')==='Organic'?' checked':'')+'>Organic</label><label><input type="radio" name="organicPaid" value="Paid"'+(it.organicPaid==='Paid'?' checked':'')+'>Paid</label></div></div></div></fieldset>';
   html+='<fieldset><legend>Schedule and approval</legend><div class="grid3">'+f('Publish date','date',it.date,'date')+f('Publish time','time',it.time)+sel('Status','status',it.status,plan.lists.statuses)+f('Owner','owner',it.owner,'list')+f('Approver','approver',it.approver,'list')+'</div>'+(PUBLIC?'':'<div class="grid2" style="margin-top:10px"><div class="f full"><label for="fld-approverComments">Approver comments</label><textarea id="fld-approverComments" name="approverComments">'+esc(it.approverComments||'')+'</textarea></div></div>')+'<datalist id="peopleList">'+people.map(o=>'<option value="'+esc(o)+'">').join('')+'</datalist></fieldset>';
   html+='<fieldset><legend>Copy and assets</legend><div class="grid2"><div class="f full"><label for="fld-copy">Post copy</label><textarea id="fld-copy" name="copy" class="copy">'+esc(it.copy)+'</textarea><div class="copyrow"><span class="cnt" id="copyCount"></span><span style="display:flex;gap:8px"><button type="button" class="btn small" id="dCopy">Copy post text</button><button type="button" class="btn small primary" id="dPreview">Post preview</button></span></div></div>'+f('Destination link','link',it.link)+(PUBLIC?'':'<div class="f full"><label>UTM link</label><div style="display:flex;gap:8px;align-items:center"><input id="utmOut" type="text" readonly value="" style="flex:1;min-width:0;padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);font-size:12px"><button type="button" class="btn small" id="utmCopy">Copy UTM link</button></div><div class="hint" id="utmHint" style="margin-top:4px"></div></div><div class="utmgrid">'+f('Source <span class="k">utm_source</span>','utm_source',(it.utm||{}).source||'')+f('Medium <span class="k">utm_medium</span>','utm_medium',(it.utm||{}).medium||'')+f('Campaign <span class="k">utm_campaign</span>','utm_campaign',(it.utm||{}).campaign||'')+f('Content <span class="k">utm_content</span>','utm_content',(it.utm||{}).content||'')+f('Term <span class="k">utm_term</span>','utm_term',(it.utm||{}).term||'')+'<div class="hint">Leave a field blank to use the default: source linkedin, medium social or paid_social, campaign and content from the post.</div></div>')+'<div class="f full"><label>Asset file</label><div class="assetbox" id="assetBox"></div><input type="file" id="assetInput" accept="image/*,video/*,.pdf" hidden><div class="hint" style="margin-top:4px">Images are stored in the calendar (resized to 1600px). PDFs up to 4 MB and videos up to 8 MB are stored too; anything larger is kept by name only, so put the file in the site’s assets folder.</div></div></div></fieldset>';
   if(!PUBLIC){ html+='<fieldset><legend>Performance</legend><table class="perf"><thead><tr><th>Metric</th><th style="text-align:right">Actual</th></tr></thead><tbody>';
