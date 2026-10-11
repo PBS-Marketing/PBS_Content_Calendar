@@ -99,6 +99,7 @@ button{cursor:pointer}
 .chip i{width:8px;height:8px;border-radius:50%;background:var(--good);display:inline-block}
 .chip.warn i{background:var(--warn)}
 .chip.err i{background:var(--bad)}
+.chip .chipbtn{font:inherit;font-weight:700;color:var(--accent,#005FFF);background:transparent;border:1px solid currentColor;border-radius:999px;padding:1px 8px;cursor:pointer;margin-left:2px}
 
 .stage{flex:1;min-height:0;position:relative;border:1px solid var(--line);border-radius:var(--radius);overflow:auto;background:var(--bg)}
 .tl{display:grid;grid-template-columns:var(--labw) 1fr;min-width:max-content;position:relative}
@@ -389,7 +390,8 @@ function toast(msg, ms=2600){ const h=$('#toastHost'); h.innerHTML=''; const t=d
 
 /* ---------- persistence ---------- */
 function dataStamp(){ const s=plan&&plan.basedOn; if(!s) return ''; const d=new Date(s); if(isNaN(d)) return ''; return ' · data '+d.getDate()+' '+MONTHS[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
-function setChip(kind, text){ if(PUBLIC){ kind=''; text='View only'; } const c=$('#saveChip'); c.className='chip'+(kind==='warn'?' warn':kind==='err'?' err':''); c.querySelector('span').textContent=text+dataStamp(); }
+function setChip(kind, text, action){ if(PUBLIC){ kind=''; text='View only'; action=null; } const c=$('#saveChip'); c.className='chip'+(kind==='warn'?' warn':kind==='err'?' err':''); c.querySelector('span').textContent=text+dataStamp(); const old=c.querySelector('.chipbtn'); if(old) old.remove(); if(action){ const b=document.createElement('button'); b.type='button'; b.className='chipbtn'; b.textContent=action; b.onclick=()=>savePlan(); c.appendChild(b); } }
+function pendingSave(){ return !!(siteApi && plan && plan.savedAt && plan.basedOn && plan.savedAt>plan.basedOn); }
 function readLocal(){ try{ const s=localStorage.getItem(LS_DATA); return s? JSON.parse(s): null; }catch(e){ return null; } }
 function writeLocal(d){ if(PUBLIC) return false; try{ localStorage.setItem(LS_DATA, JSON.stringify(d)); return true; }catch(e){ return false; } }
 async function loadPlan(){
@@ -446,16 +448,16 @@ async function savePlan(){
     setChip('warn','Saving to the shared calendar…');
     let key=''; try{ key=localStorage.getItem(LS_KEY)||''; }catch(e){}
     for(let attempt=0; attempt<3; attempt++){
-      if(!key){ key=await askAdminKey(attempt>0); if(!key){ setChip('warn','Not saved to the shared calendar. Kept on this device'); return false; } }
-      let r=null; try{ r=await fetch(SITE_API, {method:'PUT', headers:{'Content-Type':'application/json','x-admin-password':key}, body:JSON.stringify({plan:pub, baseVersion:siteVersion})}); }catch(e){ setChip('err','No connection. Kept on this device'); return false; }
+      if(!key){ key=await askAdminKey(attempt>0); if(!key){ setChip('warn','Changes on this device are not in the shared calendar yet', 'Save now'); return false; } }
+      let r=null; try{ r=await fetch(SITE_API, {method:'PUT', headers:{'Content-Type':'application/json','x-admin-password':key}, body:JSON.stringify({plan:pub, baseVersion:siteVersion})}); }catch(e){ setChip('err','No connection. Changes kept on this device', 'Retry'); return false; }
       if(r.status===401){ key=''; try{ localStorage.removeItem(LS_KEY); }catch(e){} continue; }
       if(r.status===409){ setChip('warn','Someone else saved first. Refresh to pick up their changes; yours are kept on this device'); toast('Someone else saved first. Refresh the page, then save again.', 6000); return false; }
-      if(!r.ok){ let msg=''; try{ msg=(await r.json()).error||''; }catch(e){} setChip('err','Save failed'+(msg?' ('+msg+')':'')+'. Kept on this device'); return false; }
+      if(!r.ok){ let msg=''; try{ msg=(await r.json()).error||''; }catch(e){} const why={not_configured:'ADMIN_PASSWORD is not set in Netlify', too_large:'the calendar is too large to save (over 5 MB of embedded files)', bad_request:'the save service rejected the calendar'}[msg]||(msg||('HTTP '+r.status)); setChip('err','Not saved to the shared calendar: '+why, 'Retry'); toast('Not saved to the shared calendar: '+why, 7000); return false; }
       let res={}; try{ res=await r.json(); }catch(e){}
       try{ localStorage.setItem(LS_KEY, key); }catch(e){}
       saveMode='site'; siteVersion=res.version||siteVersion; if(res.savedAt) plan.savedAt=res.savedAt; plan.basedOn=plan.savedAt; writeLocal(plan); setChip('', 'Saved to the shared calendar'); return true;
     }
-    setChip('warn','Admin password not accepted. Kept on this device'); return false;
+    setChip('warn','Admin password not accepted. Changes kept on this device', 'Save now'); return false;
   }
   setChip(saveMode==='readonly'?'warn':'', saveMode==='readonly'?'Read-only view: changes stay on this device':'Saved on this device');
   return true;
@@ -947,7 +949,7 @@ function wire(){
 
 (async function boot(){
   await loadPlan(); wire(); render();
-  setChip('', siteApi?'Saves to the shared calendar':'Saved on this device');
+  if(pendingSave()) setChip('warn','Changes on this device are not in the shared calendar yet', 'Save now'); else setChip('', siteApi?'Saves to the shared calendar':'Saved on this device');
   if(window.claude && typeof window.claude.use==='function'){
     const [a,d,as]=await Promise.all([window.claude.use('artifact').catch(()=>null), window.claude.use('downloads').catch(()=>null), window.claude.use('assets').catch(()=>null)]);
     artifactCap=PUBLIC?null:a; downloadsCap=d; assetsCap=PUBLIC?null:as; capsReady=true;
