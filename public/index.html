@@ -73,6 +73,7 @@ button{cursor:pointer}
 .cal-post i.st{width:8px;height:8px;border-radius:50%;background:var(--sc);flex:none;box-shadow:0 0 0 1.5px rgba(255,255,255,.9)}
 .cal-post.light i.st{box-shadow:0 0 0 1.5px rgba(19,38,98,.5)}
 
+.toolbar .actions{display:flex;gap:8px;align-items:center;flex-wrap:nowrap}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;padding:8px 10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
 .seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:8px;overflow:hidden;background:var(--bg)}
 .seg button{border:0;background:transparent;padding:6px 12px;font-weight:600;color:var(--muted)}
@@ -305,6 +306,7 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
     <label class="ctl"><input type="search" id="fSearch" placeholder="Search posts…" aria-label="Search"></label>
     <div class="spacer"></div>
     <span class="chip" id="saveChip"><i></i><span>Loading…</span></span>
+    <div class="actions">
     <button type="button" class="btn" id="btnOverview">Overview</button>
     <button type="button" class="btn" id="btnPillars">Pillars</button>
     <div class="menu">
@@ -315,6 +317,7 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
       </div>
     </div>
     <button type="button" class="btn primary" id="btnAdd">+ Add post</button>
+    </div>
   </div>
 
   <div class="stage" id="stage"></div>
