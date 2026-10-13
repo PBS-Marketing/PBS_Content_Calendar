@@ -26,6 +26,7 @@
    "Recognition"
   ],
   "statuses": [
+   "Submitted",
    "Planned",
    "In Draft",
    "Under Review",
@@ -151,7 +152,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p202610131",
@@ -177,7 +179,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p202610142",
@@ -203,7 +206,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p202610153",
@@ -229,7 +233,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p202610164",
@@ -255,7 +260,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p10qq2",
@@ -287,7 +293,8 @@
    },
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "prebrand2",
@@ -319,7 +326,8 @@
    },
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p10qq3",
@@ -351,7 +359,8 @@
    },
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "pcoe1_1",
@@ -377,7 +386,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p10qq4",
@@ -409,7 +419,8 @@
    },
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "prebrand3",
@@ -441,7 +452,8 @@
    },
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p10qq5",
@@ -473,7 +485,8 @@
    },
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "pcoe1_2",
@@ -499,7 +512,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p10qq6",
@@ -525,7 +539,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "prebrand4",
@@ -557,7 +572,8 @@
    },
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p10qq7",
@@ -583,7 +599,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "pcoe1_3",
@@ -609,7 +626,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p10qq8",
@@ -635,7 +653,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "prebrand5",
@@ -667,7 +686,8 @@
    },
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p10qq9",
@@ -693,7 +713,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "pcoe1_4",
@@ -719,7 +740,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "p10qq10",
@@ -745,7 +767,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "prebrand6",
@@ -777,7 +800,8 @@
    },
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "pcoe1_5",
@@ -803,7 +827,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "pcoe1_6",
@@ -829,7 +854,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   },
   {
    "id": "pcoe1_7",
@@ -855,7 +881,8 @@
    "followers": null,
    "approverComments": "",
    "organicPaid": "Organic",
-   "sensitive": false
+   "sensitive": false,
+   "accepted": "Pending"
   }
  ]
 }
