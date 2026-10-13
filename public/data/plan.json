@@ -1,6 +1,6 @@
 {
  "version": 2,
- "savedAt": "2026-10-11T16:10:00.000Z",
+ "savedAt": "2026-10-13T09:23:57.000Z",
  "title": "LinkedIn Content Calendar",
  "lists": {
   "channels": [
@@ -45,7 +45,7 @@
   },
   {
    "id": "leadership",
-   "name": "Leadership",
+   "name": "Thought Leadership",
    "color": "#132662",
    "purpose": "Build trust and industry credibility",
    "example": "Executive articles, market commentary, event reflections",
@@ -150,7 +150,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p202610131",
@@ -175,7 +176,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p202610142",
@@ -200,7 +202,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p202610153",
@@ -225,7 +228,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p202610164",
@@ -250,7 +254,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p10qq2",
@@ -281,7 +286,8 @@
     "src": "assets/PBS_10Q_Q2_LinkedIn_carousel.pdf"
    },
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "prebrand2",
@@ -312,7 +318,8 @@
     "src": "assets/PBS_Post2_Audit_Trap_Carousel.pdf"
    },
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p10qq3",
@@ -343,7 +350,8 @@
     "src": "assets/PBS_10Q_Q3_LinkedIn_carousel.pdf"
    },
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "pcoe1_1",
@@ -368,7 +376,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p10qq4",
@@ -399,7 +408,8 @@
     "src": "assets/PBS_10Q_Q4_LinkedIn_carousel.pdf"
    },
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "prebrand3",
@@ -430,7 +440,8 @@
     "src": "assets/PBS_Post3_Making_Good_Trap_Carousel.pdf"
    },
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p10qq5",
@@ -461,7 +472,8 @@
     "src": "assets/PBS_10Q_Q5_LinkedIn_carousel.pdf"
    },
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "pcoe1_2",
@@ -486,7 +498,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p10qq6",
@@ -511,7 +524,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "prebrand4",
@@ -542,7 +556,8 @@
     "src": "assets/PBS_Post4_Local_Nuance_Trap_Carousel.pdf"
    },
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p10qq7",
@@ -567,7 +582,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "pcoe1_3",
@@ -592,7 +608,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p10qq8",
@@ -617,7 +634,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "prebrand5",
@@ -648,7 +666,8 @@
     "src": "assets/PBS_Post5_Incomplete_Toolkit_Trap_Carousel.pdf"
    },
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p10qq9",
@@ -673,7 +692,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "pcoe1_4",
@@ -698,7 +718,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "p10qq10",
@@ -723,7 +744,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "prebrand6",
@@ -754,7 +776,8 @@
     "src": "assets/PBS_Post6_Accelleron_Carousel.pdf"
    },
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "pcoe1_5",
@@ -779,7 +802,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "pcoe1_6",
@@ -804,7 +828,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   },
   {
    "id": "pcoe1_7",
@@ -829,7 +854,8 @@
    "clicks": null,
    "followers": null,
    "approverComments": "",
-   "organicPaid": "Organic"
+   "organicPaid": "Organic",
+   "sensitive": false
   }
  ]
 }
