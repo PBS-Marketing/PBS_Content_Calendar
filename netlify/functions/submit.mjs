@@ -40,7 +40,7 @@ export default async (req) => {
     date, time: "", channel: (plan.lists && plan.lists.channels && plan.lists.channels[0]) || "Brand Services",
     campaign: "", pillar, format: "", objective: clean(body.objective, 80), audience: "",
     title, copy: clean(body.copy, 6000), link: "", asset: clean(body.asset, 500),
-    owner: "", approver: /jodie/i.test(owner) ? "Jodie" : "John C",
+    owner: "", approver: "",
     approverComments: "Requested by " + email + " on " + now.slice(0, 10) + (owner ? " · for " + owner : ""),
     status: "Submitted", organicPaid: "Organic", sensitive: false,
     impressions: null, engagements: null, engagementRate: null, clicks: null, followers: null,
