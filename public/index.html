@@ -100,6 +100,9 @@ button{cursor:pointer}
 .chip i{width:8px;height:8px;border-radius:50%;background:var(--good);display:inline-block}
 .chip.warn i{background:var(--warn)}
 .chip.err i{background:var(--bad)}
+.swatchfield{position:relative}
+.swatchfield i{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--muted);pointer-events:none}
+.f .swatchfield select{padding-left:29px}
 .btn .count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;margin-left:6px;border-radius:999px;background:#7C4DFF;color:#fff;font-size:11px;font-weight:700}
 table.reqs{width:100%;border-collapse:collapse;font-size:12px}
 table.reqs th{text-align:left;font-size:11px;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -500,12 +503,12 @@ const JODIE_POSITIONS = [1,2,8,9];
 function requestOwner(pillarId){ const i=plan.pillars.findIndex(p=>p.id===pillarId); return JODIE_POSITIONS.includes(i+1) ? REQUEST_OWNERS.jodie : REQUEST_OWNERS.john; }
 function openRequest(){
   const host=$('#drawerHost'); const t=today();
-  const pillarOpts=plan.pillars.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+' · '+esc(requestOwner(p.id).name)+'</option>').join('');
+  const pillarOpts=plan.pillars.map(p=>'<option value="'+esc(p.id)+'" style="color:'+p.color+'">'+esc(p.name)+'</option>').join('');
   const objOpts='<option value="">–</option>'+plan.lists.objectives.map(o=>'<option>'+esc(o)+'</option>').join('');
   host.innerHTML='<div class="scrim" id="rqScrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="rqTitle"><header><h2 id="rqTitle">Request a post</h2><button type="button" class="x" id="rqClose" aria-label="Close">×</button></header><form class="body" id="rqForm" autocomplete="off">'+
     '<p style="margin:0 0 14px;color:var(--muted)">Tell us what you’d like posted. It lands in the calendar as <b>Submitted</b> for the pillar’s owner in the marketing team to pick up, approve and schedule.</p>'+
     '<fieldset><legend>The post</legend><div class="grid2">'+
-    '<div class="f"><label for="rq-pillar">Content pillar</label><select id="rq-pillar" name="pillar" required>'+pillarOpts+'</select></div>'+
+    '<div class="f"><label for="rq-pillar">Content pillar</label><div class="swatchfield"><i id="rqSwatch"></i><select id="rq-pillar" name="pillar" required>'+pillarOpts+'</select></div></div>'+
     '<div class="f"><label for="rq-date">Date of post or activity</label><input id="rq-date" name="date" type="date" required value="'+iso(t)+'"></div>'+
     '<div class="f full"><label for="rq-title">Topic / working title</label><input id="rq-title" name="title" type="text" required placeholder="What is the post about?"></div>'+
     '<div class="f"><label for="rq-objective">Objective</label><select id="rq-objective" name="objective">'+objOpts+'</select></div>'+
@@ -513,12 +516,12 @@ function openRequest(){
     '<div class="f full"><label for="rq-copy">Proposed copy</label><textarea id="rq-copy" name="copy" class="copy" style="min-height:140px" placeholder="Draft copy, key points or links. We’ll shape it for LinkedIn."></textarea></div>'+
     '<div class="f full"><label>Attachment</label><div class="assetbox" id="rqAssetBox"></div><input type="file" id="rqFile" accept="image/png,image/jpeg,application/pdf" hidden><div class="hint" style="margin-top:4px">A PNG, JPG or PDF, up to 3 MB.</div></div>'+
     '</div></fieldset>'+
-    '<fieldset><legend>You</legend><div class="grid2"><div class="f"><label for="rq-email">Your email</label><input id="rq-email" name="email" type="email" required placeholder="name@paragon-cc.co.uk"></div><div class="f"><label>Goes to</label><div id="rqOwner" style="padding:8px 0;font-weight:600;color:var(--fg)"></div></div></div></fieldset>'+
+    '<fieldset><legend>You</legend><div class="grid2"><div class="f"><label for="rq-email">Your email</label><input id="rq-email" name="email" type="email" required placeholder="name@paragon-cc.co.uk"></div></div></fieldset>'+
     '<div class="hint" id="rqMsg" style="color:var(--bad);min-height:1.2em"></div>'+
     '</form><footer><div class="spacer"></div><button type="button" class="btn" id="rqCancel">Cancel</button><button type="submit" form="rqForm" class="btn primary" id="rqSend">Send request</button></footer></aside>';
   const close=()=>{ host.innerHTML=''; document.removeEventListener('keydown', onKey); }; const onKey=e=>{ if(e.key==='Escape') close(); }; document.addEventListener('keydown', onKey);
   $('#rqScrim').onclick=close; $('#rqClose').onclick=close; $('#rqCancel').onclick=close;
-  const showOwner=()=>{ $('#rqOwner').textContent=requestOwner($('#rq-pillar').value).name; }; $('#rq-pillar').onchange=showOwner; showOwner();
+  const showSwatch=()=>{ const p=pillarOf($('#rq-pillar').value); $('#rqSwatch').style.background=(p&&p.color)||'var(--muted)'; }; $('#rq-pillar').onchange=showSwatch; showSwatch();
   let rqAf=null;
   const drawRq=()=>{ const box=$('#rqAssetBox'); if(rqAf){ const img=/^image\//.test(rqAf.type); box.innerHTML=(img?'<img src="'+esc(rqAf.src)+'" alt="">':'<div class="fileicon">PDF</div>')+'<div class="meta"><b>'+esc(rqAf.name)+'</b><span class="hint">'+Math.round(rqAf.size/1024)+' KB</span><div class="ops"><button type="button" class="btn small" id="rqReplace">Replace</button><button type="button" class="btn small danger" id="rqRemove">Remove</button></div></div>'; $('#rqReplace').onclick=()=>$('#rqFile').click(); $('#rqRemove').onclick=()=>{ rqAf=null; drawRq(); }; }
     else { box.innerHTML='<div class="fileicon">+</div><div class="meta"><b>No file attached</b><div class="ops"><button type="button" class="btn small" id="rqAdd">Attach a PNG, JPG or PDF</button></div></div>'; $('#rqAdd').onclick=()=>$('#rqFile').click(); } };
