@@ -303,8 +303,21 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
   .grid3{grid-template-columns:1fr 1fr}
   .ov .gov{grid-template-columns:1fr}
 }
+/* Sign-in gate on the hosted site, as on the Brand, Marketing, CRM and Sales Enablement Plan */
+.gate{position:fixed;inset:0;z-index:60;background:var(--bg);display:grid;place-items:center;padding:24px;overflow:auto}
+.login-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px 24px;display:grid;gap:18px;box-shadow:var(--shadow)}
+.login-card .logo{height:40px;width:auto;justify-self:start;max-width:100%}
+.login-card h1{margin:0;font-family:var(--font-display);font-weight:700;font-size:24px;line-height:1.1;color:var(--fg);text-wrap:balance}
+.login-card .lab{display:block;font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.doors label{position:relative;display:grid;gap:2px;padding:12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--bg)}
+.doors input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.doors b{font-size:15px;color:var(--fg)}
+.doors small{font-size:12px;color:var(--muted)}
+.doors label:has(input:checked){border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
 </style>
 
+<div id="gateHost"></div>
 <div class="app">
   <header class="top">
     <div>
@@ -366,6 +379,8 @@ const LOGO = document.querySelector('.top .logo').getAttribute('src');
 const DATA_PATH = 'data/plan.json';
 const SITE_API = '/api/plan'; // on the hosted site: GET returns the shared calendar from Netlify Blobs, PUT (with the admin password) saves a new version
 const LS_KEY = 'pbs-linkedin-calendar-admin-password';
+const SESS_KEY = 'pbs-linkedin-calendar-session'; // this tab's sign-in, as on the Brand, Marketing, CRM and Sales Enablement Plan
+let accessPw = null, gateOn = false; // the signed-in password: sent with reads and post requests on the hosted site
 let siteApi = false, siteVersion = null;
 const LS_DATA = 'pbs-linkedin-calendar-data';
 const LS_VIEW = 'pbs-linkedin-calendar-view';
@@ -433,7 +448,7 @@ async function loadPlan(){
   let base=null;
   let file=null; try{ const r=await fetch(DATA_PATH, {cache:'no-store'}); if(r.ok) file=await r.json(); }catch(e){}
   if(!(window.claude && typeof window.claude.use==='function') && /^https?:/.test(location.protocol)){
-    try{ const r=await fetch(SITE_API, {cache:'no-store'}); if(r.ok){ const j=await r.json(); if(j && ('plan' in j)){ siteApi=true; siteVersion=j.version||null; if(j.plan && Array.isArray(j.plan.items)){ base=j.plan; base.savedAt=j.savedAt||base.savedAt||''; } } } }catch(e){}
+    try{ const r=await fetch(SITE_API, {cache:'no-store', headers: accessPw?{'x-password':accessPw}:{}}); if(r.status===401 && gateOn){ sessSet(null); location.reload(); } if(r.ok){ const j=await r.json(); if(j && ('plan' in j)){ siteApi=true; siteVersion=j.version||null; if(j.plan && Array.isArray(j.plan.items)){ base=j.plan; base.savedAt=j.savedAt||base.savedAt||''; } } } }catch(e){}
   }
   if(base && file && file.savedAt && file.savedAt>(base.savedAt||'')){
     // The repo's data file is newer than the last site save (an update pushed from outside). Pillars, lists and overview come from the file.
@@ -506,7 +521,9 @@ function adminSignIn(message){ return new Promise(resolve=>{ const host=$('#draw
   $('#asScrim').onclick=()=>done(''); $('#asClose').onclick=()=>done(''); $('#asCancel').onclick=()=>done('');
   $('#asForm').onsubmit=async e=>{ e.preventDefault(); const pw=$('#asInput').value.trim(); if(!pw) return; $('#asGo').disabled=true; $('#asMsg').textContent='';
     let r=null; try{ r=await fetch(SITE_API, {method:'POST', headers:{'x-admin-password':pw}}); }catch(err){}
-    if(r && r.ok){ try{ localStorage.setItem(LS_KEY, pw); }catch(err){} done(pw); return; }
+    if(r && r.ok){ let role=null; try{ role=(await r.json()).role||null; }catch(err){}
+      if(!role || role==='admin'){ try{ localStorage.setItem(LS_KEY, pw); }catch(err){} done(pw); return; }
+      $('#asMsg').textContent='That’s the team password. Enter the admin password.'; $('#asGo').disabled=false; $('#asInput').select(); return; }
     let msg='Couldn’t reach the save service. Try again.'; if(r){ let code=''; try{ code=(await r.json()).error||''; }catch(err){} msg = code==='wrong_password' ? 'That password wasn’t accepted. Try again.' : code==='not_configured' ? 'ADMIN_PASSWORD isn’t set in Netlify yet.' : 'Sign in failed ('+(code||r.status)+').'; }
     $('#asMsg').textContent=msg; $('#asGo').disabled=false; $('#asInput').select(); };
   setTimeout(()=>$('#asInput').focus(), 30); }); }
@@ -546,7 +563,7 @@ function openRequest(){
     try{ const af=await readAsset(file); if(!af.src){ toast('Couldn’t read that file'); return; } rqAf=af; drawRq(); }catch(err){ toast('Couldn’t read that file'); } };
   $('#rqForm').onsubmit=async e=>{ e.preventDefault(); const f=$('#rqForm'); if(!f.reportValidity()) return; const fd=new FormData(f); const data={}; ['pillar','date','title','objective','asset','copy','email'].forEach(k=>data[k]=(fd.get(k)||'').toString().trim()); const owner=requestOwner(data.pillar); data.owner=owner.name; if(rqAf) data.assetFile=rqAf;
     $('#rqSend').disabled=true; $('#rqMsg').textContent=''; let why='';
-    let ok=false; try{ const r=await fetch('/api/submit', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)}); ok=r.ok; if(!r.ok){ try{ why=(await r.json()).error||''; }catch(err){} } }catch(err){ why='no connection'; }
+    let ok=false; try{ const sh={'Content-Type':'application/json'}; if(accessPw) sh['x-password']=accessPw; const r=await fetch('/api/submit', {method:'POST', headers:sh, body:JSON.stringify(data)}); ok=r.ok; if(!r.ok){ try{ why=(await r.json()).error||''; }catch(err){} } }catch(err){ why='no connection'; }
     if(!ok){ $('#rqMsg').textContent='Couldn’t send the request'+(why?' ('+why+')':'')+'. Please try again.'; $('#rqSend').disabled=false; return; }
     close(); await loadPlan(); render(); toast('Request sent. It’s in the calendar as Submitted for '+owner.name+' to pick up.', 6000); };
   setTimeout(()=>$('#rq-title').focus(), 30);
@@ -577,7 +594,7 @@ async function adminGate(){
   // On the hosted site, #admin asks for the password before editing starts. The artifact and a local file don't need this.
   if(PUBLIC || !siteApi) return true;
   let pw=''; try{ pw=localStorage.getItem(LS_KEY)||''; }catch(e){}
-  if(pw){ try{ const r=await fetch(SITE_API, {method:'POST', headers:{'x-admin-password':pw}}); if(r.ok) return true; if(r.status===401){ try{ localStorage.removeItem(LS_KEY); }catch(e){} } else return true; }catch(e){ return true; } }
+  if(pw){ try{ const r=await fetch(SITE_API, {method:'POST', headers:{'x-admin-password':pw}}); if(r.ok){ let role=null; try{ role=(await r.json()).role||null; }catch(e){} if(!role || role==='admin') return true; try{ localStorage.removeItem(LS_KEY); }catch(e){} } else if(r.status===401){ try{ localStorage.removeItem(LS_KEY); }catch(e){} } else return true; }catch(e){ return true; } }
   const got=await adminSignIn('');
   if(got) return true;
   location.hash=''; location.reload(); return false;
@@ -1077,7 +1094,65 @@ function wire(){
   let rt; window.addEventListener('resize', ()=>{ clearTimeout(rt); rt=setTimeout(()=>{ if(view.mode==='weekly') renderTimeline(); }, 120); });
 }
 
+/* ---------- sign-in gate (hosted site): the wider team and the admin team, each with its own password, as on the Brand, Marketing, CRM and Sales Enablement Plan ---------- */
+function sessGet(){ try{ return JSON.parse(sessionStorage.getItem(SESS_KEY)||'null'); }catch(e){ return null; } }
+function sessSet(v){ try{ v==null ? sessionStorage.removeItem(SESS_KEY) : sessionStorage.setItem(SESS_KEY, JSON.stringify(v)); }catch(e){} }
+async function checkPassword(pw){ const r=await fetch(SITE_API, {method:'POST', headers:{'x-password':pw}}); const b=await r.json().catch(()=>({})); return {status:r.status, role:b.role||null}; }
+function renderGate(note){ return new Promise(resolve=>{ const host=$('#gateHost'); gateOn=true;
+  const pick = PUBLIC ? 'viewer' : 'admin';
+  host.innerHTML='<div class="gate"><form class="login-card" id="gateForm" novalidate>'+
+    '<img class="logo" alt="Paragon Brand Services" src="'+LOGO+'">'+
+    '<h1>LinkedIn Content Calendar</h1>'+
+    '<div><span class="lab">Sign in as</span><div class="doors" role="radiogroup" aria-label="Sign in as">'+
+    '<label><input type="radio" name="door" value="viewer"'+(pick==='viewer'?' checked':'')+'><b>Team</b><small>View the calendar</small></label>'+
+    '<label><input type="radio" name="door" value="admin"'+(pick==='admin'?' checked':'')+'><b>Admin</b><small>Edit, save and export</small></label>'+
+    '</div></div>'+
+    '<div class="f"><label for="gate-pw">Password</label><input type="password" id="gate-pw" autocomplete="current-password"></div>'+
+    '<p id="gateErr" style="margin:0;color:var(--bad);min-height:1.2em"'+(note?'':' hidden')+'>'+esc(note||'')+'</p>'+
+    '<button type="submit" class="btn primary" id="gateGo" style="justify-content:center">Sign in</button>'+
+    '</form></div>';
+  const f=$('#gateForm'), err=$('#gateErr'), go=$('#gateGo');
+  setTimeout(()=>{ const i=$('#gate-pw'); i&&i.focus(); }, 30);
+  f.onsubmit=async e=>{ e.preventDefault();
+    const door=(f.querySelector('input[name="door"]:checked')||{}).value||'viewer';
+    const pw=$('#gate-pw').value; const show=m=>{ err.textContent=m; err.hidden=false; };
+    if(!pw) return show('Enter the password.');
+    go.disabled=true; go.textContent='Signing in…';
+    let r={status:0, role:null}; try{ r=await checkPassword(pw); }catch(x){}
+    go.disabled=false; go.textContent='Sign in';
+    if(r.status===503) return show('Sign-in isn’t set up yet. Add VIEWER_PASSWORD and ADMIN_PASSWORD in Netlify (see README).');
+    if(r.status!==200) return show(r.status===401 ? 'That password isn’t right.' : 'Couldn’t reach the calendar. Check your connection and try again.');
+    if(door==='admin' && r.role!=='admin') return show('That’s the team password. Choose Team, or enter the admin password.');
+    sessSet({role:door==='admin'?'admin':'viewer', pw});
+    // Switching door changes the view-only/editing build (set by #admin), so reload to apply it. The seeded session signs us straight back in.
+    if(door==='admin'){ try{ localStorage.setItem(LS_KEY, pw); }catch(x){}
+      if(PUBLIC){ location.hash='admin'; location.reload(); return; } }
+    else if(!PUBLIC){ location.replace(location.pathname+location.search); return; }
+    accessPw=pw; host.innerHTML=''; resolve(true); };
+}); }
+async function accessGate(){
+  // Hosted only: the artifact and a local file don't need this.
+  if(!/^https?:/.test(location.protocol) || (window.claude && typeof window.claude.use==='function')) return;
+  const sess=sessGet();
+  if(sess && sess.pw){
+    let c=null; try{ c=await checkPassword(sess.pw); }catch(e){}
+    if(c && c.status===200 && (sess.role!=='admin' || c.role==='admin')){
+      accessPw=sess.pw; gateOn=true;
+      if(sess.role==='admin'){ try{ localStorage.setItem(LS_KEY, sess.pw); }catch(e){} }
+      return;
+    }
+    if(c && (c.status===401 || c.status===200)) sessSet(null);
+    if(!c) return; // couldn't reach the service: carry on, the page falls back to the data file
+  }
+  // Ask the service whether a sign-in is needed
+  let r=null; try{ r=await fetch(SITE_API, {cache:'no-store'}); }catch(e){ return; }
+  if(!((r.headers.get('content-type')||'').includes('json'))) return; // no save service on this host
+  if(r.ok) return; // an older service without the viewer password
+if(r.status===401 || r.status===503) await renderGate(r.status===503 ? 'Sign-in isn’t set up yet. Add VIEWER_PASSWORD and ADMIN_PASSWORD in Netlify (see README).' : '');
+}
+
 (async function boot(){
+  await accessGate();
   await loadPlan(); wire(); render();
   if(!(await adminGate())) return;
   if(pendingSave()) setChip('warn','Not saved to the shared calendar'); else setChip('', siteApi?'Saves to the shared calendar':'Saved on this device');
