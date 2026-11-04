@@ -1,10 +1,13 @@
 // Save service for the LinkedIn content calendar. Same pattern as the Brand, Marketing, CRM and Sales Enablement Plan.
-// GET  /api/plan  -> the latest saved plan (anyone can read)
+// POST /api/plan -> checks a password and says which version to show: { role: "viewer" | "admin" }
+// GET  /api/plan  -> the latest saved plan (team or admin password required)
 // GET  /api/plan?history=1 / ?restore=<key> -> earlier saves (admin password required)
-// POST /api/plan  -> checks the admin password (used by the sign-in box)
 // PUT  /api/plan  -> saves a new version of the plan (admin password required)
 //
-// The admin password is set in Netlify: Site configuration > Environment variables > ADMIN_PASSWORD
+// Passwords are set in Netlify: Site configuration > Environment variables
+//   VIEWER_PASSWORD  the wider team: view the calendar and send post requests
+//   ADMIN_PASSWORD   the admin team: everything above, plus edit, save, restore and export
+// The password is sent in the x-password header (x-admin-password is still accepted).
 // Calendars are stored in Netlify Blobs. Every save is also kept in history/ as a backup.
 
 import { getStore } from "@netlify/blobs";
@@ -37,20 +40,35 @@ function validPlan(p) {
     && Array.isArray(p.pillars) && Array.isArray(p.items);
 }
 
+// Which version a password opens: "admin", "viewer", or null
+function roleFor(given) {
+  const admin = env("ADMIN_PASSWORD"), viewer = env("VIEWER_PASSWORD");
+  if (!given) return null;
+  if (admin && samePassword(given, admin)) return "admin";
+  if (viewer && samePassword(given, viewer)) return "viewer";
+  return null;
+}
+
 export default async (req) => {
   const store = getStore({ name: "linkedin-calendar", consistency: "strong" });
 
   const url = new URL(req.url);
   const wantsHistory = url.searchParams.has("history"), restoreKey = url.searchParams.get("restore");
+  if (!env("ADMIN_PASSWORD")) return json({ error: "not_configured" }, 503);
+  const role = roleFor(req.headers.get("x-password") || req.headers.get("x-admin-password") || "");
 
+  // Sign in: tell the page which version to show
+  if (req.method === "POST") return role ? json({ ok: true, role }) : json({ error: "wrong_password" }, 401);
+
+  // Reading the calendar needs the team or admin password
   if (req.method === "GET" && !wantsHistory && !restoreKey) {
+    if (!role) return json({ error: "sign_in_required" }, 401);
     const rec = await store.get("plan", { type: "json" });
     return json(rec ? { plan: rec.plan, version: rec.version, savedAt: rec.savedAt } : { plan: null, version: null });
   }
 
-  const expected = env("ADMIN_PASSWORD");
-  if (!expected) return json({ error: "not_configured" }, 503);
-  if (!samePassword(req.headers.get("x-admin-password") || "", expected)) return json({ error: "wrong_password" }, 401);
+  // Everything else needs the admin password
+  if (role !== "admin") return json({ error: "wrong_password" }, 401);
 
   // Admin only: list earlier saves, newest first, or fetch one to restore
   if (req.method === "GET" && wantsHistory) {
@@ -68,8 +86,6 @@ export default async (req) => {
     const rec = await store.get(restoreKey, { type: "json" });
     return rec ? json({ plan: rec.plan, savedAt: rec.savedAt }) : json({ error: "not_found" }, 404);
   }
-
-  if (req.method === "POST") return json({ ok: true });
 
   if (req.method === "PUT") {
     const text = await req.text();

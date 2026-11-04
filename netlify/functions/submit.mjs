@@ -1,9 +1,10 @@
 // Post requests from the view-only calendar.
 // POST /api/submit -> { pillar, date, title, objective, asset, copy, email, owner, assetFile? }
-// Adds the request to the shared calendar (Netlify Blobs) as a post with status "Submitted". No password needed; nothing else can be changed this way.
+// Adds the request to the shared calendar (Netlify Blobs) as a post with status "Submitted".
+// The team or admin password is required (x-password header); nothing else can be changed this way.
 
 import { getStore } from "@netlify/blobs";
-import { randomBytes } from "node:crypto";
+import { createHash, timingSafeEqual, randomBytes } from "node:crypto";
 
 export const config = { path: "/api/submit" };
 
@@ -12,8 +13,27 @@ function json(body, status = 200) {
 }
 const clean = (v, max) => String(v == null ? "" : v).trim().slice(0, max);
 
+function env(name) {
+  try { if (typeof Netlify !== "undefined" && Netlify.env) return Netlify.env.get(name); } catch (e) {}
+  return process.env[name];
+}
+function samePassword(given, expected) {
+  const a = createHash("sha256").update(String(given)).digest();
+  const b = createHash("sha256").update(String(expected)).digest();
+  return timingSafeEqual(a, b);
+}
+function roleFor(given) {
+  const admin = env("ADMIN_PASSWORD"), viewer = env("VIEWER_PASSWORD");
+  if (!given) return null;
+  if (admin && samePassword(given, admin)) return "admin";
+  if (viewer && samePassword(given, viewer)) return "viewer";
+  return null;
+}
+
 export default async (req) => {
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
+  if (!env("ADMIN_PASSWORD")) return json({ error: "not_configured" }, 503);
+  if (!roleFor(req.headers.get("x-password") || "")) return json({ error: "sign_in_required" }, 401);
   let body;
   try { body = await req.json(); } catch (e) { return json({ error: "bad_request" }, 400); }
   const title = clean(body.title, 200), email = clean(body.email, 200), pillar = clean(body.pillar, 60), date = clean(body.date, 10);
