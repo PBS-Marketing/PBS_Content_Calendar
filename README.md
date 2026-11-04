@@ -8,7 +8,7 @@ Sister tool to the Brand, Marketing, CRM and Sales Enablement Plan roadmap (Sale
 
 | File | What it is |
 | --- | --- |
-| `public/index.html` | The whole app. No build step. Opens view-only; `#admin` on the URL switches on editing. |
+| `public/index.html` | The whole app. No build step. Signs in as Team (view-only) or Admin (editing); `#admin` on the URL preselects Admin. |
 | `public/data/plan.json` | The starting calendar and the file to update when posts are added from outside the site. |
 | `public/assets/` | The carousel PDFs the posts link to. |
 | `netlify/functions/plan.mjs` | The save service at `/api/plan`, the same pattern as the Brand, Marketing, CRM and Sales Enablement Plan. Calendars live in Netlify Blobs; every save also goes to `history/`. |
@@ -16,11 +16,13 @@ Sister tool to the Brand, Marketing, CRM and Sales Enablement Plan roadmap (Sale
 
 ## Hosting
 
-Connect the repo to Netlify. Publish directory `public`, functions in `netlify/functions` (both set in `netlify.toml`). Add one environment variable: `ADMIN_PASSWORD`. Every push to `main` redeploys.
+Connect the repo to Netlify. Publish directory `public`, functions in `netlify/functions` (both set in `netlify.toml`). Add two environment variables: `VIEWER_PASSWORD` (the wider team) and `ADMIN_PASSWORD` (the marketing team), then trigger a deploy so they take effect. Every push to `main` redeploys.
 
-## View-only and admin
+## Signing in, view-only and admin
 
-The site opens view-only: no editing, and no approver comments, performance figures or UTM data. Add `#admin` to the URL to switch on editing and the full post detail.
+The hosted site asks everyone to sign in, the same as the Brand, Marketing, CRM and Sales Enablement Plan. Team (the viewer password) opens the view-only calendar: no editing, and no approver comments, performance figures or UTM data. Admin (the admin password) switches on editing and the full post detail; `#admin` on the URL preselects the Admin door. You stay signed in until you close the tab.
+
+To change a password, edit it in Netlify's environment variables and trigger a deploy. Note that `public/data/plan.json` and the files under `public/assets/` are plain files on the site, so the sign-in doesn't cover someone fetching those paths directly.
 
 ## How saving works
 
