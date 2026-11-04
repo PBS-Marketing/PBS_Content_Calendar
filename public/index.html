@@ -1110,6 +1110,7 @@ function renderGate(note){ return new Promise(resolve=>{ const host=$('#gateHost
     '<div class="f"><label for="gate-pw">Password</label><input type="password" id="gate-pw" autocomplete="current-password"></div>'+
     '<p id="gateErr" style="margin:0;color:var(--bad);min-height:1.2em"'+(note?'':' hidden')+'>'+esc(note||'')+'</p>'+
     '<button type="submit" class="btn primary" id="gateGo" style="justify-content:center">Sign in</button>'+
+    '<p style="margin:0;color:var(--muted);font-size:11px;text-align:center">Security: your IP address is logged when you sign in.</p>'+
     '</form></div>';
   const f=$('#gateForm'), err=$('#gateErr'), go=$('#gateGo');
   setTimeout(()=>{ const i=$('#gate-pw'); i&&i.focus(); }, 30);
