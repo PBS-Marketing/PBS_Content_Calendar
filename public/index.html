@@ -77,7 +77,9 @@ button{cursor:pointer}
 
 .toolbar .rowbreak{flex-basis:100%;height:0;margin:0}
 .toolbar .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-right:auto}
-.toolbar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;padding:8px 10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.toolbar{display:flex;gap:12px;align-items:stretch;padding:8px 10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.toolbar .trows{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;flex:1;min-width:0}
+.toolbar .li-logo{align-self:stretch;width:84px;min-height:84px;object-fit:cover;border-radius:10px;flex:none}
 .seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:8px;overflow:hidden;background:var(--bg)}
 .seg button{border:0;background:transparent;padding:6px 12px;font-weight:600;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
@@ -332,6 +334,8 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
   </header>
 
   <div class="toolbar">
+    <img class="li-logo" alt="LinkedIn" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAllBMVEUKZsT///8AYsMAX8L///0AW74AW8EhZcHz+v4AZMRzltDZ5fE9f8j2+fxols6ov+NkktGWstoAVsDE1ulKfsvt8/hZiM2/0Om3zOSGptT3//y0xeN8ntTg6/EAULsAUbmKrtoncMY1dscvbMXQ3fFYi8gASrqSttucvN6nw97P4O94n9AARLdVg8wAP7aQrN1fmcxsodD1rbA4AAAE0klEQVR4nO2ba3eiOhRAIYFoBFQioFREkOr4qHem///P3XMSVKz46nS166579ocJjwCbk5MHXY5lEQ8if1qAIAiCIAiCIAiCIAiCIAiCIAiCIAiCIIj/Dkx2biB/5HcILPG6NxiVP2ElZvZNBvwHpNzD0x3HuSxse3TlhySMA81TnAvWVhHrtZ64RB7u6baFp8EVKZlkWZYuTufUcDrwW6JaQr1s+JCVjHZQF+9ppLww9K5JtcIHEEy7f7TgQ6gbLC4eLqMY6o3UI1KiwAbqsVrKq4Tg22ciBVLAScp9xf2p+EKpFC7i/WelmpFiWmritkjhTR6TSvEeJyl4Q7Zsl2rP849S8JbA8iKpMFKflBoJxlajv2k+S/zyvExd1H2q+c6l7PF+P7mW6A81nyXVfI4ZJSVOApJBkkrrPFLSnMMtLkRzAIHaUB2lGjl1gwebT5b7KIpKy4J/o8ote7+KXgRazZzCU3vo8byT7NaDIrHqqzlLisF6t8hT7NFHqcADAtuJoYAR3ptsxt5LLdU+xFzmVNDtBkORxEHX6S31NNEtxElKqhBmraDbZ3l/awbm7VJ3VlaO9X4c7uCWJ6lxVZYM2q+wysp3CqaUsoZx3XxXpZo5JULcB6kAik09G9ihOOaUSRgnU9YEX8eA1/Ooi62Gu7OznBrDSQWVU24xf2gSgEfBZ6UOz7RfBKulxFIfHIh8o8/HJjjYmFvbOV5wJsUgvFoKMohLxvCnk2pyR8o5l4Jb11LQMmMzQSTcSK32Ohs2c5HpkudvOFLaE8X120DGTF4vpQ6RgjZe9HoWHODL56QakQq5KvUzCmF6H9eOWyb5GA0EZzyfYk3XnNlUSrm9VikndXGBBck0hb4rO0bqoSEBpY6R8lZMmpAMhEn0LZ7dCikXGLFpD9EJ4OuHbBV2p7xol4KH5DgHOgm242dzaqzw3fDAVGkp3aZeCUmybyQQbmS+dtfTk9w715pvZR9O8ZenIuUcpSYo5TekdEeewRoC5rKzrLZ32j3UY4PEftgulR9b9kkp+4oUJjpmkv0qJNvb56QmUvo+fH8+TjWab26k+EHq1og+zIVB3pHqxFh9wGWJQVv/k8/n+eptNc/dSgexgzm12jwudSNSgzQtgLTw70i97XQSJcLS0/7CZcwtvQgXJ3rEHMHqmhVOW6I3mw+23DvN12wFdVtKCS0TVwJXqHbwO0lCmNZ23OKFSfrXUWx/tVTeHDxbpOQiNg8Sa31BYAZZHK0P6/C6B9yRupdTHyJ1VUpPyEqPW3ao+Pp02boDdyrrjzwY3+MWKQdXoB+lrq4SghPODqSg1KuEwN5oKdhHqRkUaOmOsWY85Hy4NWGaZWbJVU4CEHfidAEXv/QOXzPjTqcSEKnfrKqEviCTVYeZ5oMVW0u0Fn6TUpZYVLLCAr+SpFVv6QLfrOPXR9jcz8J1keSHzwxVZmGYWULXhTVZvZ6aAaAfY6mljlsji/v9y08nMG0CB7CAuUnq4lBBmtK8FGOHTcZd123cU8I+ry+2rAdWnmzZT96T7/2Lwl2pyn/fLPvfKyXav0GPhGz5593vP/jXgC9CRhPvBgMp/T/998X3RgqS7Dxnz+HYjyr6LzwEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQfxP+RcweV5/6db6fwAAAABJRU5ErkJggg==">
+    <div class="trows">
     <div class="seg" role="group" aria-label="View">
       <button type="button" data-view="weekly" aria-pressed="false">Weekly</button>
       <button type="button" data-view="calendar" aria-pressed="true">Calendar</button>
@@ -339,7 +343,7 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
     </div>
     <label class="ctl">From <select id="rangeStart"></select></label>
     <label class="ctl">Show <select id="rangeLen"></select></label>
-    <label class="ctl">Channel <select id="fChannel"><option value="">All</option></select></label>
+    <label class="ctl" style="display:none">Channel <select id="fChannel"><option value="">All</option></select></label>
     <label class="ctl">Status <select id="fStatus"><option value="">All</option></select></label>
     <label class="ctl">Owner <select id="fOwner"><option value="">All</option></select></label>
     <label class="ctl search"><input type="search" id="fSearch" placeholder="Search posts…" aria-label="Search"></label>
@@ -361,6 +365,7 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
     <div class="spacer"></div>
     <span class="chip" id="saveChip"><i></i><span>Loading…</span></span>
     <button type="button" class="btn signout" id="btnSignOut" hidden>Sign out</button>
+    </div>
   </div>
 
   <div class="savebar" id="saveBar" hidden>
@@ -1087,13 +1092,13 @@ function wire(){
   $('#fSearch').oninput=e=>{ view.q=e.target.value; render(); };
   window.addEventListener('hashchange', ()=>{ if(/(^|[#&])admin\b/.test(location.hash)!==!PUBLIC) location.reload(); });
   $('#saveBarBtn').onclick=()=>savePlan();
-  if(PUBLIC){ document.body.classList.add('public'); $('#saveBar').remove(); $('#btnAdd').remove(); $('#btnPillars').remove(); $('#btnRequests').remove(); $('#btnRequest').onclick=openRequest; const c=$('#saveChip'); c.className='chip'; c.querySelector('span').textContent='View only'+dataStamp(); }
+  if(PUBLIC){ document.body.classList.add('public'); $('#saveBar').remove(); $('#btnAdd').remove(); $('#btnPillars').remove(); $('#btnRequests').remove(); $('#btnExport').closest('.menu').remove(); $('#btnRequest').onclick=openRequest; const c=$('#saveChip'); c.className='chip'; c.querySelector('span').textContent='View only'+dataStamp(); }
   else { $('#btnRequest').remove(); $('#btnRequests').onclick=openRequests; $('#btnAdd').onclick=()=>addItem(); $('#btnPillars').onclick=openPillars; }
   $('#btnOverview').onclick=openOverview;
   const menu=$('#exportMenu'), btn=$('#btnExport');
-  btn.onclick=()=>{ menu.hidden=!menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); if(!menu.hidden){ const r=btn.getBoundingClientRect(); menu.classList.toggle('flip', r.left + menu.offsetWidth > window.innerWidth - 12); } };
-  document.addEventListener('click', e=>{ if(!e.target.closest('.menu')){ menu.hidden=true; btn.setAttribute('aria-expanded','false'); } });
-  menu.querySelectorAll('button').forEach(b=>b.onclick=async ()=>{ menu.hidden=true; const k=b.dataset.export; if(k==='import'){ $('#fileImport').click(); return; } if(k==='reload'){ try{ localStorage.removeItem(LS_DATA); }catch(e){} location.reload(); return; } let m=null; if(k==='pptx'||k==='xlsx'){ m=await chooseMonth(k); if(!m) return; } toast(k==='pptx'?'Building the PowerPoint…':k==='xlsx'?'Building the workbook…':'Preparing file…', 1800); try{ if(k==='xlsx') await exportXlsx(m); else if(k==='pptx') await exportPptx(m); else await exportJson(); }catch(e){ console.error(e); toast('Export failed: '+(e&&e.message||e)); } });
+  if(btn) btn.onclick=()=>{ menu.hidden=!menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); if(!menu.hidden){ const r=btn.getBoundingClientRect(); menu.classList.toggle('flip', r.left + menu.offsetWidth > window.innerWidth - 12); } };
+  if(menu) document.addEventListener('click', e=>{ if(!e.target.closest('.menu')){ menu.hidden=true; btn.setAttribute('aria-expanded','false'); } });
+  if(menu) menu.querySelectorAll('button').forEach(b=>b.onclick=async ()=>{ menu.hidden=true; const k=b.dataset.export; if(k==='import'){ $('#fileImport').click(); return; } if(k==='reload'){ try{ localStorage.removeItem(LS_DATA); }catch(e){} location.reload(); return; } let m=null; if(k==='pptx'||k==='xlsx'){ m=await chooseMonth(k); if(!m) return; } toast(k==='pptx'?'Building the PowerPoint…':k==='xlsx'?'Building the workbook…':'Preparing file…', 1800); try{ if(k==='xlsx') await exportXlsx(m); else if(k==='pptx') await exportPptx(m); else await exportJson(); }catch(e){ console.error(e); toast('Export failed: '+(e&&e.message||e)); } });
   const fi=$('#fileImport'); if(fi) fi.onchange=e=>{ const f=e.target.files[0]; if(f) importFile(f); e.target.value=''; };
   $('#stage').addEventListener('click', e=>{ const pv=e.target.closest('[data-preview]'); if(pv){ const it=plan.items.find(i=>i.id===pv.dataset.preview); if(it) openPreview(previewFrom(it)); return; } const o=e.target.closest('[data-open]'); if(o){ openItem(o.dataset.open,false); return; } const a=e.target.closest('[data-add]'); if(a){ addItem(a.dataset.add); return; } const ad=e.target.closest('[data-add-date]'); if(ad) addItem('', ad.dataset.addDate); });
   $('#stage').addEventListener('keydown', e=>{ if(e.key==='Enter'){ const o=e.target.closest('[data-open]'); if(o) openItem(o.dataset.open,false); } });
