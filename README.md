@@ -24,6 +24,8 @@ The hosted site asks everyone to sign in, the same as the Brand, Marketing, CRM 
 
 To change a password, edit it in Netlify's environment variables and trigger a deploy. Note that `public/data/plan.json` and the files under `public/assets/` are plain files on the site, so the sign-in doesn't cover someone fetching those paths directly.
 
+Every sign-in attempt is logged with its time, IP address and outcome. The sign-in screen says so. Entries go to the Netlify function log and to the store under `security/` (the newest 500 are kept); an admin can fetch the newest 100 at `/api/plan?security=1` with the admin password in the `x-password` header.
+
 ## How saving works
 
 In admin, Save sends the calendar to `/api/plan` with the admin password (asked for once per browser, then remembered). The service stores it in Netlify Blobs and keeps a copy under `history/`. Everyone reads the calendar from the same service, so a save shows for the next person straight away. If two admins save at once, the second is told to refresh and try again, so nothing is silently overwritten.
