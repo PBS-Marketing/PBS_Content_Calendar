@@ -9,6 +9,10 @@
 //   ADMIN_PASSWORD   the admin team: everything above, plus edit, save, restore and export
 // The password is sent in the x-password header (x-admin-password is still accepted).
 // Calendars are stored in Netlify Blobs. Every save is also kept in history/ as a backup.
+//
+// Security: every sign-in attempt (POST) is logged with time, IP address and outcome,
+// to the function log and to the store under security/ (newest 500 kept).
+// GET /api/plan?security=1 (admin password required) returns the newest 100 entries.
 
 import { getStore } from "@netlify/blobs";
 import { createHash, timingSafeEqual, randomBytes } from "node:crypto";
@@ -49,19 +53,38 @@ function roleFor(given) {
   return null;
 }
 
-export default async (req) => {
+// Record one sign-in attempt: when, from which IP address, and the outcome
+async function logSignIn(store, req, context, role) {
+  try {
+    const when = new Date().toISOString();
+    const ip = (context && context.ip) || req.headers.get("x-nf-client-connection-ip") || "unknown";
+    const entry = { when, ip, outcome: role || "wrong_password", agent: (req.headers.get("user-agent") || "").slice(0, 200) };
+    console.log("sign-in", JSON.stringify(entry));
+    await store.setJSON("security/" + when + "-" + randomBytes(2).toString("hex"), entry);
+    // Keep only the newest 500 entries
+    const { blobs } = await store.list({ prefix: "security/" });
+    const keys = blobs.map(b => b.key).sort();
+    for (const k of keys.slice(0, Math.max(0, keys.length - 500))) await store.delete(k);
+  } catch (e) { console.log("sign-in log failed", e && e.message); }
+}
+
+export default async (req, context) => {
   const store = getStore({ name: "linkedin-calendar", consistency: "strong" });
 
   const url = new URL(req.url);
   const wantsHistory = url.searchParams.has("history"), restoreKey = url.searchParams.get("restore");
+  const wantsSecurity = url.searchParams.has("security");
   if (!env("ADMIN_PASSWORD")) return json({ error: "not_configured" }, 503);
   const role = roleFor(req.headers.get("x-password") || req.headers.get("x-admin-password") || "");
 
-  // Sign in: tell the page which version to show
-  if (req.method === "POST") return role ? json({ ok: true, role }) : json({ error: "wrong_password" }, 401);
+  // Sign in: log the attempt, then tell the page which version to show
+  if (req.method === "POST") {
+    await logSignIn(store, req, context, role);
+    return role ? json({ ok: true, role }) : json({ error: "wrong_password" }, 401);
+  }
 
   // Reading the calendar needs the team or admin password
-  if (req.method === "GET" && !wantsHistory && !restoreKey) {
+  if (req.method === "GET" && !wantsHistory && !restoreKey && !wantsSecurity) {
     if (!role) return json({ error: "sign_in_required" }, 401);
     const rec = await store.get("plan", { type: "json" });
     return json(rec ? { plan: rec.plan, version: rec.version, savedAt: rec.savedAt } : { plan: null, version: null });
@@ -69,6 +92,15 @@ export default async (req) => {
 
   // Everything else needs the admin password
   if (role !== "admin") return json({ error: "wrong_password" }, 401);
+
+  // Admin only: the sign-in log, newest first
+  if (req.method === "GET" && wantsSecurity) {
+    const { blobs } = await store.list({ prefix: "security/" });
+    const keys = blobs.map(b => b.key).sort().reverse().slice(0, 100);
+    const events = [];
+    for (const key of keys) { const rec = await store.get(key, { type: "json" }); if (rec) events.push(rec); }
+    return json({ events });
+  }
 
   // Admin only: list earlier saves, newest first, or fetch one to restore
   if (req.method === "GET" && wantsHistory) {
