@@ -364,6 +364,7 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
     </div>
     <div class="spacer"></div>
     <span class="chip" id="saveChip"><i></i><span>Loading…</span></span>
+    <button type="button" class="btn" id="btnBackup" hidden>Backup</button>
     <button type="button" class="btn signout" id="btnSignOut" hidden>Sign out</button>
     </div>
   </div>
@@ -1092,8 +1093,8 @@ function wire(){
   $('#fSearch').oninput=e=>{ view.q=e.target.value; render(); };
   window.addEventListener('hashchange', ()=>{ if(/(^|[#&])admin\b/.test(location.hash)!==!PUBLIC) location.reload(); });
   $('#saveBarBtn').onclick=()=>savePlan();
-  if(PUBLIC){ document.body.classList.add('public'); $('#saveBar').remove(); $('#btnAdd').remove(); $('#btnPillars').remove(); $('#btnRequests').remove(); $('#btnExport').closest('.menu').remove(); $('#btnRequest').onclick=openRequest; const c=$('#saveChip'); c.className='chip'; c.querySelector('span').textContent='View only'+dataStamp(); }
-  else { $('#btnRequest').remove(); $('#btnRequests').onclick=openRequests; $('#btnAdd').onclick=()=>addItem(); $('#btnPillars').onclick=openPillars; }
+  if(PUBLIC){ document.body.classList.add('public'); $('#saveBar').remove(); $('#btnAdd').remove(); $('#btnPillars').remove(); $('#btnRequests').remove(); $('#btnExport').closest('.menu').remove(); $('#btnBackup').remove(); $('#btnRequest').onclick=openRequest; const c=$('#saveChip'); c.className='chip'; c.querySelector('span').textContent='View only'+dataStamp(); }
+  else { $('#btnRequest').remove(); $('#btnRequests').onclick=openRequests; $('#btnAdd').onclick=()=>addItem(); $('#btnPillars').onclick=openPillars; const bb=$('#btnBackup'); bb.hidden=false; bb.onclick=downloadBackup; }
   $('#btnOverview').onclick=openOverview;
   const menu=$('#exportMenu'), btn=$('#btnExport');
   if(btn) btn.onclick=()=>{ menu.hidden=!menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); if(!menu.hidden){ const r=btn.getBoundingClientRect(); menu.classList.toggle('flip', r.left + menu.offsetWidth > window.innerWidth - 12); } };
@@ -1106,6 +1107,34 @@ function wire(){
 }
 
 /* ---------- sign-in gate (hosted site): the wider team and the admin team, each with its own password, as on the Brand, Marketing, CRM and Sales Enablement Plan ---------- */
+/* ---------- Backup: zip of the data needed to restore the calendar ---------- */
+async function downloadBackup(){
+  const btn=$('#btnBackup'); if(btn){ btn.disabled=true; btn.textContent='Backing up…'; }
+  try{
+    if(!window.JSZip) await new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'; s.onload=res; s.onerror=()=>rej(new Error('couldn’t load the zip library')); document.head.appendChild(s); });
+    const zip=new JSZip(); const now=new Date();
+    let pw=accessPw||''; if(!pw){ try{ pw=localStorage.getItem(LS_KEY)||''; }catch(e){} }
+    const hosted=/^https?:/.test(location.protocol);
+    const grab=async (path,opts)=>{ try{ const r=await fetch(path,opts); return r.ok? await r.text(): null; }catch(e){ return null; } };
+    let gotLive=false, gotLog=false;
+    if(hosted){
+      const live=await grab(SITE_API,{cache:'no-store',headers:pw?{'x-password':pw}:{}}); if(live){ zip.file('netlify/shared-calendar.json', live); gotLive=true; }
+      const log=await grab(SITE_API+'?security=1',{cache:'no-store',headers:pw?{'x-password':pw}:{}}); if(log){ zip.file('netlify/sign-in-log.json', log); gotLog=true; }
+      const page=await grab(location.pathname,{cache:'no-store'}); if(page) zip.file('github/index.html', page);
+      const seed=await grab(DATA_PATH,{cache:'no-store'}); if(seed) zip.file('github/data/plan.json', seed);
+    }
+    zip.file('this-browser-calendar.json', JSON.stringify({savedAt:plan&&plan.savedAt, plan}, null, 1));
+    zip.file('README.txt',
+'PBS LinkedIn Content Calendar - backup\nCreated: '+now.toISOString()+'\nSite: '+(hosted?location.origin:'(not the hosted site)')+'\n\nWhat is inside\n- netlify/shared-calendar.json: the live shared calendar (Netlify Blobs). Its "plan" field is the calendar itself.'+(gotLive?'':' MISSING from this backup: the site could not be reached or the sign-in had expired.')+'\n- netlify/sign-in-log.json: the newest 100 sign-in log entries.'+(gotLog?'':' MISSING from this backup.')+'\n- github/index.html: the app page as deployed.\n- github/data/plan.json: the starting data file as deployed.\n- this-browser-calendar.json: the calendar as loaded in the browser that made this backup.\n\nHow to restore\n1. Code: the GitHub repo PBS-Marketing/PBS_Content_Calendar holds the full site (public/, netlify/functions/, netlify.toml). Deploy it on Netlify and set the VIEWER_PASSWORD and ADMIN_PASSWORD environment variables (the passwords themselves are not in this backup).\n2. Calendar data: take the "plan" object from netlify/shared-calendar.json, save it as public/data/plan.json in the repo with a current "savedAt" value, and deploy: the site takes the data file when it is newer than the last site save. Or sign in as Admin, make any small edit and save, then use this file via the API: PUT /api/plan with header x-admin-password and body {"plan": <the plan object>, "baseVersion": <version from a fresh GET>}.\n');
+    const blob=await zip.generateAsync({type:'blob'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    a.download='pbs-content-calendar-backup-'+now.toISOString().slice(0,16).replace(/[:T]/g,'-')+'.zip';
+    document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    toast(gotLive||!hosted?'Backup downloaded':'Backup downloaded, but without the shared calendar: sign in again and retry');
+  }catch(e){ toast('Backup failed: '+((e&&e.message)||e)); }
+  if(btn){ btn.disabled=false; btn.textContent='Backup'; }
+}
+
 function sessGet(){ try{ return JSON.parse(sessionStorage.getItem(SESS_KEY)||'null'); }catch(e){ return null; } }
 function sessSet(v){ try{ v==null ? sessionStorage.removeItem(SESS_KEY) : sessionStorage.setItem(SESS_KEY, JSON.stringify(v)); }catch(e){} }
 async function checkPassword(pw){ const r=await fetch(SITE_API, {method:'POST', headers:{'x-password':pw}}); const b=await r.json().catch(()=>({})); return {status:r.status, role:b.role||null}; }
