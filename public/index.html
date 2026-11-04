@@ -34,6 +34,7 @@ button{cursor:pointer}
 
 .app{height:100%;display:flex;flex-direction:column;padding-inline:16px;padding-block:12px 10px;gap:8px;min-width:0}
 .top{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.top[hidden]{display:none}
 .top h1{font-family:var(--font-display);font-weight:700;font-size:clamp(20px,2.6vw,30px);margin:0;color:var(--fg);letter-spacing:-.01em;text-wrap:balance;line-height:1.1}
 .top .sub{color:var(--muted);font-size:13px;margin-top:4px}
 .top .logo{margin-left:auto;height:44px;width:auto;max-width:40vw;flex:none}
@@ -83,6 +84,8 @@ button{cursor:pointer}
 .ctl{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}
 .ctl select,.ctl input{padding:6px 8px;border:1px solid var(--line-strong);border-radius:8px;background:var(--bg);color:var(--ink);min-width:0;max-width:170px}
 .ctl input[type="search"]{width:170px}
+.ctl.search{flex:1;justify-content:flex-end}
+.ctl.search input[type="search"]{width:100%;max-width:260px}
 .spacer{flex:1}
 .btn{border:1px solid var(--line-strong);background:var(--bg);color:var(--fg);padding:7px 12px;border-radius:8px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .btn:hover{border-color:var(--accent)}
@@ -320,7 +323,7 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
 
 <div id="gateHost"></div>
 <div class="app">
-  <header class="top">
+  <header class="top" hidden>
     <div>
       <h1 id="planTitle">LinkedIn Content Calendar</h1>
       <div class="sub" id="rangeLabel"></div>
@@ -339,9 +342,7 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
     <label class="ctl">Channel <select id="fChannel"><option value="">All</option></select></label>
     <label class="ctl">Status <select id="fStatus"><option value="">All</option></select></label>
     <label class="ctl">Owner <select id="fOwner"><option value="">All</option></select></label>
-    <label class="ctl"><input type="search" id="fSearch" placeholder="Search posts…" aria-label="Search"></label>
-    <div class="spacer"></div>
-    <span class="chip" id="saveChip"><i></i><span>Loading…</span></span>
+    <label class="ctl search"><input type="search" id="fSearch" placeholder="Search posts…" aria-label="Search"></label>
     <div class="rowbreak"></div>
     <div class="actions">
     <button type="button" class="btn primary" id="btnRequest">Request a post</button>
@@ -357,6 +358,8 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
     </div>
     <button type="button" class="btn primary" id="btnAdd">+ Add post</button>
     </div>
+    <div class="spacer"></div>
+    <span class="chip" id="saveChip"><i></i><span>Loading…</span></span>
     <button type="button" class="btn signout" id="btnSignOut" hidden>Sign out</button>
   </div>
 
@@ -397,7 +400,7 @@ const METRICS = [['impressions','Impressions'],['engagements','Engagements'],['c
 const COLS = [['date','Publish date'],['time','Publish time'],['channel','LinkedIn channel'],['campaign','Campaign'],['pillar','Content pillar'],['format','Format'],['objective','Objective'],['audience','Audience'],['title','Topic / working title'],['copy','Post copy'],['link','Destination link'],['asset','Asset'],['owner','Owner'],['approver','Approver'],['status','Status'],['impressions','Impressions'],['engagements','Engagements'],['engagementRate','Engagement rate'],['clicks','Clicks'],['followers','Followers gained'],['approverComments','Approver comments'],['organicPaid','Organic or paid'],['utmLink','UTM link']];
 
 let plan = null;
-let view = {mode:'calendar', start:'2026-10', len:1, wstart:'', weeks:4, channel:'', status:'', owner:'', q:''};
+let view = {mode:'calendar', start:ym(today()), len:1, wstart:'', weeks:4, channel:'', status:'', owner:'', q:''};
 let artifactCap = null, downloadsCap = null, assetsCap = null, capsReady = false;
 let saveMode = 'local';
 const PUBLIC = (!/(^|[#&])admin\b/.test(location.hash)); // view-only build: no editing, no approver comments, performance or UTM data
@@ -482,7 +485,8 @@ async function loadPlan(){
   plan=normalise(base); plan.basedOn=fileStamp;
   try{ const v=JSON.parse(localStorage.getItem(LS_VIEW)||'null'); if(v) Object.assign(view, v, {q:''}); }catch(e){}
   if(!view.wstart) view.wstart=iso(mondayOnOrBefore(today()));
-  if(view.mode==='monthly') view.mode='calendar';
+  // Default on open: the month (calendar) view, showing the current month
+  view.mode='calendar'; view.start=ym(today());
 }
 async function savePlan(){
   if(PUBLIC) return;
