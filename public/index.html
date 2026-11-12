@@ -358,7 +358,9 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
       <div class="pop" id="exportMenu" hidden>
         <button type="button" data-export="xlsx">Excel workbook<small>Same columns as the source calendar, plus overview and lists</small></button>
         <button type="button" data-export="pptx">PowerPoint deck<small>Timeline slides plus one slide per pillar</small></button>
+        <button type="button" data-export="import">Restore from a backup<small>A Backup zip, or a calendar .json file</small></button>
       </div>
+      <input type="file" id="fileImport" accept=".zip,.json,application/zip,application/json" hidden>
     </div>
     <button type="button" class="btn primary" id="btnAdd">+ Add post</button>
     </div>
@@ -389,6 +391,8 @@ table.perf td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:n
 const LOGO = document.querySelector('.top .logo').getAttribute('src');
 const DATA_PATH = 'data/plan.json';
 const SITE_API = '/api/plan'; // on the hosted site: GET returns the shared calendar from Netlify Blobs, PUT (with the admin password) saves a new version
+const ASSET_API = '/api/asset/'; // attached files are stored here one by one; the calendar only keeps a link to each
+const ASSET_MAX = 15*1024*1024, ASSET_PART = 3*1024*1024; // largest file, and the size of each slice a large file is sent in
 const LS_KEY = 'pbs-linkedin-calendar-admin-password';
 const SESS_KEY = 'pbs-linkedin-calendar-session'; // this tab's sign-in, as on the Brand, Marketing, CRM and Sales Enablement Plan
 let accessPw = null, gateOn = false; // the signed-in password: sent with reads and post requests on the hosted site
@@ -449,6 +453,46 @@ function normalise(data){
 }
 function toast(msg, ms=2600){ const h=$('#toastHost'); h.innerHTML=''; const t=document.createElement('div'); t.className='toast'; t.textContent=msg; h.appendChild(t); clearTimeout(toast._t); toast._t=setTimeout(()=>{t.remove();}, ms); }
 
+/* ---------- attached files ----------
+   On the hosted site a file is never kept inside the calendar. It is uploaded to the asset service on its own
+   and the post keeps a link (assetFile.src = "/api/asset/<id>"). That is what keeps a save small however many
+   files are attached. A file still embedded from before ("data:...") is moved out the next time the calendar saves. */
+const isEmbedded = src => typeof src==='string' && /^data:/.test(src);
+function embeddedItems(){ return ((plan&&plan.items)||[]).filter(it=>it.assetFile && isEmbedded(it.assetFile.src)); }
+function apiPw(){ let k=''; if(!PUBLIC){ try{ k=localStorage.getItem(LS_KEY)||''; }catch(e){} } return k||accessPw||''; } // admin password when editing, otherwise the signed-in one
+function dataUrlToBlob(src){ const i=src.indexOf(','); const head=src.slice(5,i); const type=head.split(';')[0]||'application/octet-stream'; if(/;base64/i.test(head)){ const b=atob(src.slice(i+1)); const u=new Uint8Array(b.length); for(let j=0;j<b.length;j++) u[j]=b.charCodeAt(j); return new Blob([u],{type}); } return new Blob([decodeURIComponent(src.slice(i+1))],{type}); }
+async function sha256Hex(buf){ const h=await crypto.subtle.digest('SHA-256', buf); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+// Send one file to the asset service. Its id is its own SHA-256, so a file the service already holds isn't sent again.
+async function uploadAsset(blob, name, type){
+  const bad=c=>{ const e=new Error(c); e.code=c; return e; };
+  const pw=apiPw(); if(!pw) throw bad('sign_in_required');
+  if(blob.size>ASSET_MAX) throw bad('too_large');
+  const buf=await blob.arrayBuffer(); const id=await sha256Hex(buf); const src=ASSET_API+id;
+  const fail=async r=>{ let c=''; try{ c=(await r.json()).error||''; }catch(x){} throw bad(c||('http_'+r.status)); };
+  const seen=await fetch(src+'?meta=1', {cache:'no-store', headers:{'x-password':pw}});
+  if(seen.status===401) await fail(seen);
+  if(seen.ok){ const j=await seen.json().catch(()=>({})); if(j.exists) return {id, src, size:blob.size}; }
+  const parts=Math.max(1, Math.ceil(buf.byteLength/ASSET_PART));
+  for(let i=0;i<parts;i++){ const r=await fetch(src+'?part='+i+'&parts='+parts, {method:'PUT', headers:{'x-password':pw, 'x-asset-type':type||blob.type||'application/octet-stream', 'x-asset-name':encodeURIComponent(name||'file'), 'Content-Type':'application/octet-stream'}, body:buf.slice(i*ASSET_PART, (i+1)*ASSET_PART)}); if(!r.ok) await fail(r); }
+  return {id, src, size:blob.size};
+}
+function uploadWhy(e){ const c=e&&e.code; return c==='too_large'?'that file is over 15 MB':c==='unsupported_type'?'that file type isn’t supported':c==='sign_in_required'?'sign in again first':c==='checksum_mismatch'?'the file didn’t arrive intact, try again':'the upload failed ('+(c||'no connection')+')'; }
+// Move every file still embedded in the calendar out to the asset service, leaving a link in its place.
+async function moveFilesOut(onStep){ const todo=embeddedItems(); let moved=0, failed=0;
+  for(const it of todo){ if(onStep) onStep(moved+failed+1, todo.length); const af=it.assetFile;
+    try{ const blob=dataUrlToBlob(af.src); const up=await uploadAsset(blob, af.name, af.type||blob.type); it.assetFile=Object.assign({}, af, {src:up.src, size:blob.size, assetId:up.id}); moved++; }
+    catch(e){ failed++; if(e && e.code==='sign_in_required') break; } }
+  return {moved, failed}; }
+// Attach a file to a post: on the hosted site it goes to the asset service; on a local copy of the page it stays in the browser as before.
+async function storeAsset(file){
+  if(!siteApi) return readAsset(file);
+  if(/^(application\/pdf|video\/(mp4|webm))$/.test(file.type)){ if(file.size>ASSET_MAX) return {name:file.name, type:file.type, size:file.size, src:null}; const up=await uploadAsset(file, file.name, file.type); return {name:file.name, type:file.type, size:file.size, src:up.src, assetId:up.id}; }
+  const af=await readAsset(file);
+  if(isEmbedded(af.src)){ const blob=dataUrlToBlob(af.src); const up=await uploadAsset(blob, af.name, af.type||blob.type); af.src=up.src; af.size=blob.size; af.assetId=up.id; }
+  return af; }
+// The calendar's text has a ceiling too (5.5 MB a save). At the current rate that is years away; say so well before it matters.
+function noteSize(bytes, limit){ if(!bytes || !limit || PUBLIC || noteSize.told) return; if(bytes/limit>0.7){ noteSize.told=true; setTimeout(()=>toast('The calendar is at '+Math.round(bytes/limit*100)+'% of its '+(limit/1e6).toFixed(1)+' MB text limit. Export older posts and delete them before it fills.', 9000), 900); } }
+
 /* ---------- persistence ---------- */
 function dataStamp(){ const s=plan&&plan.basedOn; if(!s) return ''; const d=new Date(s); if(isNaN(d)) return ''; return ' · data '+d.getDate()+' '+MONTHS[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
 function setChip(kind, text, action){ if(PUBLIC){ kind=''; text='View only'; action=null; } const c=$('#saveChip'); c.className='chip'+(kind==='warn'?' warn':kind==='err'?' err':''); c.querySelector('span').textContent=text+dataStamp(); const old=c.querySelector('.chipbtn'); if(old) old.remove(); if(action){ const b=document.createElement('button'); b.type='button'; b.className='chipbtn'; b.textContent=action; b.onclick=()=>savePlan(); c.appendChild(b); } }
@@ -459,7 +503,7 @@ async function loadPlan(){
   let base=null;
   let file=null; try{ const r=await fetch(DATA_PATH, {cache:'no-store'}); if(r.ok) file=await r.json(); }catch(e){}
   if(!(window.claude && typeof window.claude.use==='function') && /^https?:/.test(location.protocol)){
-    try{ const r=await fetch(SITE_API, {cache:'no-store', headers: accessPw?{'x-password':accessPw}:{}}); if(r.status===401 && gateOn){ sessSet(null); location.reload(); } if(r.ok){ const j=await r.json(); if(j && ('plan' in j)){ siteApi=true; siteVersion=j.version||null; if(j.plan && Array.isArray(j.plan.items)){ base=j.plan; base.savedAt=j.savedAt||base.savedAt||''; } } } }catch(e){}
+    try{ const r=await fetch(SITE_API, {cache:'no-store', headers: accessPw?{'x-password':accessPw}:{}}); if(r.status===401 && gateOn){ sessSet(null); location.reload(); } if(r.ok){ const j=await r.json(); if(j && ('plan' in j)){ siteApi=true; siteVersion=j.version||null; noteSize(j.bytes, j.limit); if(j.plan && Array.isArray(j.plan.items)){ base=j.plan; base.savedAt=j.savedAt||base.savedAt||''; } } } }catch(e){}
   }
   if(base && file && file.savedAt && file.savedAt>(base.savedAt||'')){
     // The repo's data file is newer than the last site save (an update pushed from outside). Pillars, lists and overview come from the file.
@@ -494,10 +538,11 @@ async function loadPlan(){
   // Default on open: the month (calendar) view, showing the current month
   view.mode='calendar'; view.start=ym(today());
 }
+function tooLargeWhy(){ const left=embeddedItems().map(it=>({t:it.title||'(untitled)', n:it.assetFile.src.length*0.75})).sort((a,b)=>b.n-a.n); return left.length ? left.length+' attached file'+(left.length===1?'':'s')+' couldn’t be moved to file storage, and the calendar is too large to save with '+(left.length===1?'it':'them')+' inside (the biggest is on “'+left[0].t+'”, '+(left[0].n/1048576).toFixed(1)+' MB). Check your connection and save again, or remove that file from the post' : 'the calendar’s text is over its 5.5 MB limit. Export older posts and delete them'; }
 async function savePlan(){
   if(PUBLIC) return;
   plan.savedAt=new Date().toISOString();
-  const pub=Object.assign({}, plan); delete pub.basedOn; const json=JSON.stringify(pub, null, 1);
+  let pub=Object.assign({}, plan); delete pub.basedOn; const json=JSON.stringify(pub, null, 1);
   writeLocal(plan);
   if(artifactCap && saveMode!=='readonly'){
     setChip('warn','Saving…');
@@ -512,11 +557,19 @@ async function savePlan(){
     let key=''; try{ key=localStorage.getItem(LS_KEY)||''; }catch(e){}
     for(let attempt=0; attempt<3; attempt++){
       if(!key){ key=await askAdminKey(attempt>0); if(!key){ setChip('warn','Not saved to the shared calendar'); updateSaveBar('Sign in with the admin password to save. Everyone else still sees the last saved version.'); return false; } }
-      let r=null; try{ r=await fetch(SITE_API, {method:'PUT', headers:{'Content-Type':'application/json','x-admin-password':key}, body:JSON.stringify({plan:pub, baseVersion:siteVersion})}); }catch(e){ setChip('err','No connection'); updateSaveBar('No connection to the save service. Everyone else still sees the last saved version.'); return false; }
+      // Files don't travel inside the calendar. Any still embedded (attached before files had their own storage) move out first.
+      const stuck=embeddedItems().length; if(stuck){ setChip('warn','Moving '+stuck+' attached file'+(stuck===1?'':'s')+' out of the calendar…'); await moveFilesOut((i,n)=>setChip('warn','Moving attached files out of the calendar: '+i+' of '+n+'…')); pub=Object.assign({}, plan); delete pub.basedOn; writeLocal(plan); setChip('warn','Saving to the shared calendar…'); }
+      const body=JSON.stringify({plan:pub, baseVersion:siteVersion});
+      // Netlify turns away any request over 6 MB before the save service sees it, so stop here with a reason instead
+      if(body.length>5400000){ const why=tooLargeWhy(); setChip('err','Not saved to the shared calendar'); updateSaveBar('Last attempt failed: '+why+'. Everyone else still sees the last saved version.'); toast('Not saved to the shared calendar: '+why, 9000); return false; }
+      let r=null; try{ r=await fetch(SITE_API, {method:'PUT', headers:{'Content-Type':'application/json','x-admin-password':key}, body}); }catch(e){ setChip('err','No connection'); updateSaveBar('No connection to the save service. Everyone else still sees the last saved version.'); return false; }
       if(r.status===401){ key=''; try{ localStorage.removeItem(LS_KEY); }catch(e){} continue; }
       if(r.status===409){ setChip('warn','Someone else saved first'); updateSaveBar('Someone else saved first. Refresh to pick up their changes, then save again.'); toast('Someone else saved first. Refresh the page, then save again.', 6000); return false; }
-      if(!r.ok){ let msg=''; try{ msg=(await r.json()).error||''; }catch(e){} const why={not_configured:'ADMIN_PASSWORD is not set in Netlify', too_large:'the calendar is too large to save (over 5 MB of embedded files)', bad_request:'the save service rejected the calendar'}[msg]||(msg||('HTTP '+r.status)); setChip('err','Not saved to the shared calendar'); updateSaveBar('Last attempt failed: '+why+'. Everyone else still sees the last saved version.'); toast('Not saved to the shared calendar: '+why, 7000); return false; }
+      if(!r.ok){ let msg=''; try{ msg=(await r.json()).error||''; }catch(e){} const why={not_configured:'ADMIN_PASSWORD is not set in Netlify', too_large:tooLargeWhy(), bad_request:'the save service rejected the calendar'}[msg]||(msg||('HTTP '+r.status)); setChip('err','Not saved to the shared calendar'); updateSaveBar('Last attempt failed: '+why+'. Everyone else still sees the last saved version.'); toast('Not saved to the shared calendar: '+why, 7000); return false; }
       let res={}; try{ res=await r.json(); }catch(e){}
+      // The service moves out any file the page couldn't, and sends back the links
+      if(res.plan && Array.isArray(res.plan.items)){ const links=new Map(res.plan.items.map(i=>[i.id,i.assetFile])); plan.items.forEach(it=>{ const l=links.get(it.id); if(it.assetFile && isEmbedded(it.assetFile.src) && l && !isEmbedded(l.src)) it.assetFile=l; }); }
+      noteSize(res.bytes, res.limit);
       try{ localStorage.setItem(LS_KEY, key); }catch(e){}
       saveMode='site'; siteVersion=res.version||siteVersion; if(res.savedAt) plan.savedAt=res.savedAt; plan.basedOn=plan.savedAt; writeLocal(plan); setChip('', 'Saved to the shared calendar'); updateSaveBar(); return true;
     }
@@ -572,7 +625,7 @@ function openRequest(){
   $('#rqFile').onchange=async e=>{ const file=e.target.files[0]; e.target.value=''; if(!file) return;
     if(!/^(image\/(png|jpeg)|application\/pdf)$/.test(file.type)){ toast('Please attach a PNG, JPG or PDF'); return; }
     if(file.size>3*1024*1024){ toast('That file is over 3 MB'); return; }
-    try{ const af=await readAsset(file); if(!af.src){ toast('Couldn’t read that file'); return; } rqAf=af; drawRq(); }catch(err){ toast('Couldn’t read that file'); } };
+    try{ if(siteApi) toast('Uploading '+file.name+'…', 30000); const af=await storeAsset(file); if(!af.src){ toast('Couldn’t read that file'); return; } rqAf=af; drawRq(); if(siteApi) toast('Attached '+file.name); }catch(err){ toast(err&&err.code?'Not attached: '+uploadWhy(err):'Couldn’t read that file', 6000); } };
   $('#rqForm').onsubmit=async e=>{ e.preventDefault(); const f=$('#rqForm'); if(!f.reportValidity()) return; const fd=new FormData(f); const data={}; ['pillar','date','title','objective','asset','copy','email'].forEach(k=>data[k]=(fd.get(k)||'').toString().trim()); const owner=requestOwner(data.pillar); data.owner=owner.name; if(rqAf) data.assetFile=rqAf;
     $('#rqSend').disabled=true; $('#rqMsg').textContent=''; let why='';
     let ok=false; try{ const sh={'Content-Type':'application/json'}; if(accessPw) sh['x-password']=accessPw; const r=await fetch('/api/submit', {method:'POST', headers:sh, body:JSON.stringify(data)}); ok=r.ok; if(!r.ok){ try{ why=(await r.json()).error||''; }catch(err){} } }catch(err){ why='no connection'; }
@@ -739,7 +792,7 @@ function openItem(id, isNew){
   html+='<div class="f"><label for="fld-pillar">Content pillar</label><select id="fld-pillar" name="pillar">'+plan.pillars.map(p=>'<option value="'+p.id+'"'+(p.id===it.pillar?' selected':'')+'>'+esc(p.name)+'</option>').join('')+'</select></div>';
   html+=f('Campaign','campaign',it.campaign)+sel('LinkedIn channel','channel',it.channel,plan.lists.channels)+sel('Format','format',it.format,plan.lists.formats)+sel('Objective','objective',it.objective,plan.lists.objectives)+f('Audience','audience',it.audience)+'<div class="f"><label>Organic / Paid</label><div class="toggle" role="radiogroup" aria-label="Organic or paid"><label><input type="radio" name="organicPaid" value="Organic"'+((it.organicPaid||'Organic')==='Organic'?' checked':'')+'>Organic</label><label><input type="radio" name="organicPaid" value="Paid"'+(it.organicPaid==='Paid'?' checked':'')+'>Paid</label></div></div>'+(PUBLIC?'':'<div class="f"><label>Sensitive</label><div class="toggle" role="radiogroup" aria-label="Sensitive" title="Yes hides the post from the view-only version"><label><input type="radio" name="sensitive" value="Yes"'+(it.sensitive?' checked':'')+'>Yes</label><label><input type="radio" name="sensitive" value="No"'+(it.sensitive?'':' checked')+'>No</label></div><div class="hint" style="margin-top:4px">Yes: Content Admin view only</div></div>')+'</div></fieldset>';
   html+='<fieldset><legend>Schedule and approval</legend><div class="grid3">'+f('Publish date','date',it.date,'date')+f('Publish time','time',it.time)+sel('Status','status',it.status,plan.lists.statuses)+f('Owner','owner',it.owner,'list')+f('Approver','approver',it.approver,'list')+(PUBLIC?'':'<div class="f"><label>Request accepted</label><div class="toggle" role="radiogroup" aria-label="Request accepted" title="No takes the post out of the weekly, calendar and list views">'+['Yes','No','Pending'].map(v=>'<label><input type="radio" name="accepted" value="'+v+'"'+((it.accepted||'Pending')===v?' checked':'')+'>'+v+'</label>').join('')+'</div></div>')+'</div>'+(PUBLIC?'':'<div class="grid2" style="margin-top:10px"><div class="f full"><label for="fld-approverComments">Approver comments</label><textarea id="fld-approverComments" name="approverComments">'+esc(it.approverComments||'')+'</textarea></div></div>')+'<datalist id="peopleList">'+people.map(o=>'<option value="'+esc(o)+'">').join('')+'</datalist></fieldset>';
-  html+='<fieldset><legend>Copy and assets</legend><div class="grid2"><div class="f full"><label for="fld-copy">Post copy</label><textarea id="fld-copy" name="copy" class="copy">'+esc(it.copy)+'</textarea><div class="copyrow"><span class="cnt" id="copyCount"></span><span style="display:flex;gap:8px"><button type="button" class="btn small" id="dCopy">Copy post text</button><button type="button" class="btn small primary" id="dPreview">Post preview</button><button type="button" class="btn small primary" id="dCopyImg" title="Copy the preview as an image to paste into an email or chat">Copy Preview</button></span></div></div>'+f('Destination link','link',it.link)+(PUBLIC?'':'<div class="f full"><label>UTM link</label><div style="display:flex;gap:8px;align-items:center"><input id="utmOut" type="text" readonly value="" style="flex:1;min-width:0;padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);font-size:12px"><button type="button" class="btn small" id="utmCopy">Copy UTM link</button></div><div class="hint" id="utmHint" style="margin-top:4px"></div></div><div class="utmgrid">'+f('Source <span class="k">utm_source</span>','utm_source',(it.utm||{}).source||'')+f('Medium <span class="k">utm_medium</span>','utm_medium',(it.utm||{}).medium||'')+f('Campaign <span class="k">utm_campaign</span>','utm_campaign',(it.utm||{}).campaign||'')+f('Content <span class="k">utm_content</span>','utm_content',(it.utm||{}).content||'')+f('Term <span class="k">utm_term</span>','utm_term',(it.utm||{}).term||'')+'<div class="hint">Leave a field blank to use the default: source linkedin, medium social or paid_social, campaign and content from the post.</div></div>')+'<div class="f full"><label>Asset file</label><div class="assetbox" id="assetBox"></div><input type="file" id="assetInput" accept="image/*,video/*,.pdf" hidden><div class="hint" style="margin-top:4px">Images are stored in the calendar (resized to 1600px). PDFs up to 4 MB and videos up to 8 MB are stored too; anything larger is kept by name only, so put the file in the site’s assets folder.</div></div></div></fieldset>';
+  html+='<fieldset><legend>Copy and assets</legend><div class="grid2"><div class="f full"><label for="fld-copy">Post copy</label><textarea id="fld-copy" name="copy" class="copy">'+esc(it.copy)+'</textarea><div class="copyrow"><span class="cnt" id="copyCount"></span><span style="display:flex;gap:8px"><button type="button" class="btn small" id="dCopy">Copy post text</button><button type="button" class="btn small primary" id="dPreview">Post preview</button><button type="button" class="btn small primary" id="dCopyImg" title="Copy the preview as an image to paste into an email or chat">Copy Preview</button></span></div></div>'+f('Destination link','link',it.link)+(PUBLIC?'':'<div class="f full"><label>UTM link</label><div style="display:flex;gap:8px;align-items:center"><input id="utmOut" type="text" readonly value="" style="flex:1;min-width:0;padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);font-size:12px"><button type="button" class="btn small" id="utmCopy">Copy UTM link</button></div><div class="hint" id="utmHint" style="margin-top:4px"></div></div><div class="utmgrid">'+f('Source <span class="k">utm_source</span>','utm_source',(it.utm||{}).source||'')+f('Medium <span class="k">utm_medium</span>','utm_medium',(it.utm||{}).medium||'')+f('Campaign <span class="k">utm_campaign</span>','utm_campaign',(it.utm||{}).campaign||'')+f('Content <span class="k">utm_content</span>','utm_content',(it.utm||{}).content||'')+f('Term <span class="k">utm_term</span>','utm_term',(it.utm||{}).term||'')+'<div class="hint">Leave a field blank to use the default: source linkedin, medium social or paid_social, campaign and content from the post.</div></div>')+'<div class="f full"><label>Asset file</label><div class="assetbox" id="assetBox"></div><input type="file" id="assetInput" accept="image/*,video/*,.pdf" hidden><div class="hint" style="margin-top:4px">Images (resized to 1600px), PDFs and MP4 or WebM videos up to 15 MB are stored with the calendar. Anything larger is kept by name only, so put the file in the site’s assets folder.</div></div></div></fieldset>';
   if(!PUBLIC){ html+='<fieldset><legend>Performance</legend><table class="perf"><thead><tr><th>Metric</th><th style="text-align:right">Actual</th></tr></thead><tbody>';
   METRICS.forEach(([k,label])=>{ html+='<tr><td class="m">'+label+'</td><td><input type="number" min="0" step="1" name="'+k+'" value="'+(it[k]==null?'':it[k])+'" aria-label="'+label+'"></td></tr>'; });
   html+='<tr><td class="m">Engagement rate</td><td class="v" id="erCell"></td></tr></tbody></table><div class="grid2" style="margin-top:8px"><div class="f"><label for="fld-engagementRate">Reported engagement rate (%)</label><input id="fld-engagementRate" name="engagementRate" type="number" step="0.01" min="0" value="'+(it.engagementRate==null?'':(it.engagementRate*100).toFixed(2))+'"></div></div><div class="hint" style="margin-top:6px">Engagement rate is engagements ÷ impressions unless you enter the rate LinkedIn reports.</div></fieldset>'; }
@@ -756,7 +809,7 @@ function openItem(id, isNew){
   drawAsset();
   $('#assetInput').onchange=async e=>{ const file=e.target.files[0]; e.target.value=''; if(!file) return;
     if(assetsCap && /^(image\/(png|jpeg|gif|webp)|video\/(mp4|webm)|application\/pdf)$/.test(file.type)){ toast('Uploading '+file.name+'…', 10000); try{ const r=await assetsCap.upload(file); af={name:file.name, type:file.type, size:r.sizeBytes, src:r.url, assetId:r.id}; drawAsset(); toast('Uploaded '+file.name); }catch(err){ const c=err&&err.code; toast(c==='too_large'?'That file is over 20 MB':c==='unsupported_type'?'That file type isn’t supported':'Upload failed ('+(c||'error')+')', 5000); } return; }
-    try{ af=await readAsset(file); drawAsset(); toast(/^image/.test(file.type)?'Image attached':'File name recorded'); }catch(err){ toast('Couldn’t read that file'); } };
+    try{ if(siteApi) toast('Uploading '+file.name+'…', 30000); af=await storeAsset(file); drawAsset(); toast(af.src?'Attached '+file.name:(file.size>ASSET_MAX?'Over 15 MB: file name recorded only':'File name recorded'), af.src?2600:5000); }catch(err){ toast(err&&err.code?'Not attached: '+uploadWhy(err):'Couldn’t read that file', 6000); } };
   const previewValues=()=>{ const fd=new FormData(form); const v={}; ['title','copy','channel','format','date','time','link','status','organicPaid'].forEach(k=>v[k]=(fd.get(k)||'').toString()); v.assetFile=af; v.engagements=fd.get('engagements'); return v; };
   $('#dPreview').onclick=()=>openPreview(previewValues());
   // Copy the mocked-up post as a PNG, so it can be pasted straight into an email, Teams or a deck.
@@ -1079,8 +1132,23 @@ async function importExcel(file){
   render(); await savePlan();
   toast('Imported '+items.length+' posts from “'+name+'”'+(untitled?' ('+untitled+' titled from their copy)':'')+(skipped?' ('+skipped+' undated rows skipped)':''), 6000);
 }
-function importJson(file){ const r=new FileReader(); r.onload=async ()=>{ try{ const d=JSON.parse(r.result); if(!d||!Array.isArray(d.items)||!Array.isArray(d.pillars)) throw new Error('shape'); plan=normalise(d); render(); await savePlan(); toast('Imported '+plan.items.length+' posts'); }catch(e){ toast('That file isn’t a calendar export'); } }; r.readAsText(file); }
-function importFile(file){ if(/\.json$/i.test(file.name)) importJson(file); else importExcel(file); }
+// Restore: put a backed-up calendar back as the live one. Takes a Backup zip (calendar plus its attached files) or a calendar .json.
+function calendarIn(d){ const p=(d && d.plan && Array.isArray(d.plan.items)) ? d.plan : d; if(!p||!Array.isArray(p.items)||!Array.isArray(p.pillars)) throw new Error('shape'); return p; }
+function okToRestore(p, from){ const when=p.savedAt?new Date(p.savedAt):null; return confirm('Replace the calendar with this backup?\n\n'+p.items.length+' posts'+(when&&!isNaN(when)?', last changed '+when.toLocaleString('en-GB'):'')+' ('+from+').\n\nThis replaces the shared calendar for everyone. Every earlier save stays in the history.'); }
+async function applyRestore(p){ const keep=plan&&plan.basedOn; plan=normalise(p); plan.basedOn=keep; render(); const ok=await savePlan(); toast(ok?'Restored '+plan.items.length+' posts':'Restored on this device, but not saved to the shared calendar yet', 6000); }
+function importJson(file){ const r=new FileReader(); r.onload=async ()=>{ let p; try{ p=calendarIn(JSON.parse(r.result)); }catch(e){ toast('That file isn’t a calendar export'); return; } if(okToRestore(p, file.name)) await applyRestore(p); }; r.readAsText(file); }
+async function importZip(file){
+  let zip, p, from='this-browser-calendar.json';
+  try{ const JSZ=await ensureLib('JSZip','https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'); if(!JSZ) throw new Error('lib'); zip=await JSZ.loadAsync(file);
+    let entry=zip.file(from); if(!entry){ from='netlify/shared-calendar.json'; entry=zip.file(from); } if(!entry) throw new Error('shape'); p=calendarIn(JSON.parse(await entry.async('string'))); }
+  catch(e){ toast(e&&e.message==='lib'?'Couldn’t load the zip library':'That zip isn’t a calendar backup', 5000); return; }
+  if(!okToRestore(p, file.name)) return;
+  // Put the attached files back first: the calendar only holds links to them
+  let index=[]; try{ index=JSON.parse(await zip.file('files/index.json').async('string')); }catch(e){}
+  let missing=0; if(siteApi){ for(let i=0;i<index.length;i++){ const f=index[i]; const z=zip.file('files/'+f.id); if(!z){ missing++; continue; } toast('Restoring attached files: '+(i+1)+' of '+index.length+'…', 30000); try{ await uploadAsset(new Blob([await z.async('arraybuffer')], {type:f.type||''}), f.name, f.type); }catch(e){ missing++; } } }
+  await applyRestore(p); if(missing) setTimeout(()=>toast(missing+' attached file'+(missing===1?'':'s')+' couldn’t be restored', 7000), 2500);
+}
+function importFile(file){ if(/\.zip$/i.test(file.name)) importZip(file); else if(/\.json$/i.test(file.name)) importJson(file); else toast('Choose a Backup zip or a calendar .json file', 5000); }
 
 /* ---------- wiring ---------- */
 function wire(){
@@ -1124,8 +1192,12 @@ async function downloadBackup(){
       const seed=await grab(DATA_PATH,{cache:'no-store'}); if(seed) zip.file('github/data/plan.json', seed);
     }
     zip.file('this-browser-calendar.json', JSON.stringify({savedAt:plan&&plan.savedAt, plan}, null, 1));
+    // Attached files: the calendar only holds links, so the backup carries one copy of each file, named by the id in its link
+    const files=new Map(); ((plan&&plan.items)||[]).forEach(it=>{ const m=/^\/api\/asset\/([0-9a-f]{64})$/.exec((it.assetFile&&it.assetFile.src)||''); if(m) files.set(m[1], it.assetFile); });
+    let gotFiles=0, n=0; if(hosted){ for(const id of files.keys()){ n++; if(btn) btn.textContent='Backing up file '+n+' of '+files.size+'…'; try{ const r=await fetch(ASSET_API+id, {headers:pw?{'x-password':pw}:{}}); if(r.ok){ zip.file('files/'+id, await r.arrayBuffer()); gotFiles++; } }catch(e){} } }
+    zip.file('files/index.json', JSON.stringify(Array.from(files, ([id,af])=>({id, name:af.name||'', type:af.type||'', size:af.size||0})), null, 1));
     zip.file('README.txt',
-'PBS LinkedIn Content Calendar - backup\nCreated: '+now.toISOString()+'\nSite: '+(hosted?location.origin:'(not the hosted site)')+'\n\nWhat is inside\n- netlify/shared-calendar.json: the live shared calendar (Netlify Blobs). Its "plan" field is the calendar itself.'+(gotLive?'':' MISSING from this backup: the site could not be reached or the sign-in had expired.')+'\n- netlify/sign-in-log.json: the newest 100 sign-in log entries.'+(gotLog?'':' MISSING from this backup.')+'\n- github/index.html: the app page as deployed.\n- github/data/plan.json: the starting data file as deployed.\n- this-browser-calendar.json: the calendar as loaded in the browser that made this backup.\n\nHow to restore\n1. Code: the GitHub repo PBS-Marketing/PBS_Content_Calendar holds the full site (public/, netlify/functions/, netlify.toml). Deploy it on Netlify and set the VIEWER_PASSWORD and ADMIN_PASSWORD environment variables (the passwords themselves are not in this backup).\n2. Calendar data: take the "plan" object from netlify/shared-calendar.json, save it as public/data/plan.json in the repo with a current "savedAt" value, and deploy: the site takes the data file when it is newer than the last site save. Or sign in as Admin, make any small edit and save, then use this file via the API: PUT /api/plan with header x-admin-password and body {"plan": <the plan object>, "baseVersion": <version from a fresh GET>}.\n');
+'PBS LinkedIn Content Calendar - backup\nCreated: '+now.toISOString()+'\nSite: '+(hosted?location.origin:'(not the hosted site)')+'\n\nWhat is inside\n- netlify/shared-calendar.json: the live shared calendar (Netlify Blobs). Its "plan" field is the calendar itself.'+(gotLive?'':' MISSING from this backup: the site could not be reached or the sign-in had expired.')+'\n- netlify/sign-in-log.json: the newest 100 sign-in log entries.'+(gotLog?'':' MISSING from this backup.')+'\n- github/index.html: the app page as deployed.\n- github/data/plan.json: the starting data file as deployed.\n- this-browser-calendar.json: the calendar as loaded in the browser that made this backup, including changes not yet saved.\n- files/: the files attached to posts ('+gotFiles+' of '+files.size+' in this backup). Each is named by the id in its post’s link (assetFile.src = /api/asset/<id>); files/index.json lists the original names.\n\nHow to restore\n0. The quick way: sign in to the site as Admin, open Export, choose Restore from a backup and pick this zip. It puts the attached files back, then the calendar.\n1. Code: the GitHub repo PBS-Marketing/PBS_Content_Calendar holds the full site (public/, netlify/functions/, netlify.toml). Deploy it on Netlify and set the VIEWER_PASSWORD and ADMIN_PASSWORD environment variables (the passwords themselves are not in this backup).\n2. Calendar data: take the "plan" object from netlify/shared-calendar.json, save it as public/data/plan.json in the repo with a current "savedAt" value, and deploy: the site takes the data file when it is newer than the last site save. Or sign in as Admin, make any small edit and save, then use this file via the API: PUT /api/plan with header x-admin-password and body {"plan": <the plan object>, "baseVersion": <version from a fresh GET>}.\n');
     const blob=await zip.generateAsync({type:'blob'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
     a.download='pbs-content-calendar-backup-'+now.toISOString().slice(0,16).replace(/[:T]/g,'-')+'.zip';
@@ -1172,7 +1244,7 @@ function renderGate(note){ return new Promise(resolve=>{ const host=$('#gateHost
     accessPw=pw; host.innerHTML=''; resolve(true); };
 }); }
 // Sign out of the hosted site: forget this tab's session and the remembered admin password, back to the sign-in screen
-function signOutGate(){ sessSet(null); try{ localStorage.removeItem(LS_KEY); }catch(e){} location.replace(location.pathname+location.search); }
+function signOutGate(){ sessSet(null); try{ localStorage.removeItem(LS_KEY); }catch(e){} const go=()=>location.replace(location.pathname+location.search); fetch(SITE_API+'?signout=1', {method:'POST'}).then(go, go); }
 async function accessGate(){
   // Hosted only: the artifact and a local file don't need this.
   if(!/^https?:/.test(location.protocol) || (window.claude && typeof window.claude.use==='function')) return;
@@ -1200,7 +1272,7 @@ if(r.status===401 || r.status===503) await renderGate(r.status===503 ? 'Sign-in 
   await loadPlan(); wire(); render();
   if(!(await adminGate())) return;
   if(pendingSave()) setChip('warn','Not saved to the shared calendar'); else setChip('', siteApi?'Saves to the shared calendar':'Saved on this device');
-  updateSaveBar();
+  { const n=siteApi?embeddedItems().length:0; updateSaveBar(n ? n+' attached file'+(n===1?' is':'s are')+' still held inside the calendar. Saving moves '+(n===1?'it':'them')+' to file storage first, which is what lets the calendar save.' : undefined); }
   if(window.claude && typeof window.claude.use==='function'){
     const [a,d,as]=await Promise.all([window.claude.use('artifact').catch(()=>null), window.claude.use('downloads').catch(()=>null), window.claude.use('assets').catch(()=>null)]);
     artifactCap=PUBLIC?null:a; downloadsCap=d; assetsCap=PUBLIC?null:as; capsReady=true;
